@@ -67,10 +67,18 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
           setProfileState(cloud);
           localStorage.setItem(KEY, JSON.stringify(cloud));
         } else {
-          // Cloud leer: lokale Daten (falls vorhanden) initial in Cloud pushen
+          // Cloud leer: lokale Daten übernehmen ODER aus Google-User auto-erstellen
           const localRaw = localStorage.getItem(KEY);
           if (localRaw) {
-            await setDoc(ref, JSON.parse(localRaw));
+            const localProfile = JSON.parse(localRaw) as UserProfile;
+            await setDoc(ref, localProfile);
+          } else {
+            // Kein lokales Profil → automatisch aus Google-Daten anlegen
+            const autoName = (user.displayName?.split(" ")[0] || user.email?.split("@")[0] || "Meister").trim();
+            const autoProfile: UserProfile = { name: autoName, erstelltAm: Date.now() };
+            setProfileState(autoProfile);
+            localStorage.setItem(KEY, JSON.stringify(autoProfile));
+            await setDoc(ref, autoProfile);
           }
         }
       } catch (err) {

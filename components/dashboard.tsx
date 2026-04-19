@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "motion/react";
 import { useProfile } from "@/lib/profile-store";
+import { useAuth } from "@/lib/auth-context";
 import { useProgress, getLevel, LEVELS } from "@/lib/progress-context";
 import { CLUSTERS, type Cluster, type Frage, type ThemaFrontmatter } from "@/lib/types";
 import { NavBar } from "@/components/nav-bar";
@@ -40,12 +41,15 @@ const stagger = { hidden: { opacity: 0 }, show: { opacity: 1, transition: { stag
 
 export function Dashboard({ master, contentStats, themenByCluster }: Props) {
   const { profile, ready } = useProfile();
+  const { user, loading: authLoading } = useAuth();
   const { stats, progress, getHFMastery } = useProgress();
   const router = useRouter();
 
   useEffect(() => {
-    if (ready && !profile) router.push("/onboarding");
-  }, [ready, profile, router]);
+    // Onboarding nur nötig wenn KEIN eingeloggter User (bei Login kommt Profil auto)
+    if (authLoading) return;
+    if (ready && !profile && (!user || user.isGuest)) router.push("/onboarding");
+  }, [ready, profile, user, authLoading, router]);
 
   if (!ready || !profile) {
     return <div className="flex-1 flex items-center justify-center text-muted-foreground">…</div>;

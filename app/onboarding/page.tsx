@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "motion/react";
 import { useProfile } from "@/lib/profile-store";
+import { useAuth } from "@/lib/auth-context";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ClawbuisMark } from "@/components/clawbuis-mark";
@@ -14,8 +15,15 @@ import { ArrowRight } from "lucide-react";
 export default function OnboardingPage() {
   const router = useRouter();
   const { setProfile } = useProfile();
+  const { user, loading: authLoading } = useAuth();
   const [name, setName] = useState("");
   const canGo = name.trim().length >= 2;
+
+  // Wenn User sich anmeldet (Google / E-Mail), übernimmt ProfileProvider
+  // den Google-Namen automatisch → direkt zum Dashboard weiterleiten.
+  useEffect(() => {
+    if (!authLoading && user && !user.isGuest) router.replace("/");
+  }, [user, authLoading, router]);
 
   function commit() {
     if (!canGo) return;
