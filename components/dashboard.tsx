@@ -13,6 +13,7 @@ import { useProfile } from "@/lib/profile-store";
 import { useProgress, getLevel, LEVELS } from "@/lib/progress-context";
 import { CLUSTERS, type Cluster, type Frage, type ThemaFrontmatter } from "@/lib/types";
 import { NavBar } from "@/components/nav-bar";
+import { CloudSyncBanner } from "@/components/cloud-sync-banner";
 import { ProgressRing } from "@/components/progress-ring";
 import { AnimatedCounter } from "@/components/animated-counter";
 import { Card, CardContent } from "@/components/ui/card";
@@ -78,6 +79,11 @@ export function Dashboard({ master, contentStats, themenByCluster }: Props) {
         animate="show"
         className="max-w-5xl mx-auto px-4 md:px-6 py-4 md:py-6 space-y-5"
       >
+        {/* ─── Cloud-Sync-Banner · nur für Gäste ─────────────────────── */}
+        <motion.div variants={fadeUp}>
+          <CloudSyncBanner variant="compact" />
+        </motion.div>
+
         {/* ─── Hero: Begrüßung + Daily Goal ─────────────────────────── */}
         <motion.div variants={fadeUp}>
           <Card className="border-border/30 bg-card/60 backdrop-blur-sm overflow-hidden relative">

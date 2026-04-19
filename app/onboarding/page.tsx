@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ClawbuisMark } from "@/components/clawbuis-mark";
 import { ClawbuisCompact } from "@/components/clawbuis-badge";
+import { CloudSyncBanner } from "@/components/cloud-sync-banner";
 import { ArrowRight } from "lucide-react";
 
 export default function OnboardingPage() {
@@ -71,6 +72,7 @@ export default function OnboardingPage() {
           transition={{ delay: 0.9 }}
           className="rounded-2xl bg-card/60 border border-border backdrop-blur-sm p-5 space-y-4 shadow-xl shadow-black/20"
         >
+          <p className="text-[10px] uppercase tracking-[0.3em] text-primary font-medium">Lokal spielen</p>
           <Input
             autoFocus
             value={name}
@@ -84,8 +86,30 @@ export default function OnboardingPage() {
             Los geht&apos;s <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
           <p className="text-[11px] text-muted-foreground">
-            Alles bleibt auf deinem Gerät · kein Konto · kein Tracking
+            Alles bleibt auf diesem Gerät · kein Konto · kein Tracking
           </p>
+        </motion.div>
+
+        {/* Oder-Trenner */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.05 }}
+          className="relative my-2"
+        >
+          <div className="absolute inset-0 flex items-center"><span className="w-full border-t border-border/60" /></div>
+          <div className="relative flex justify-center">
+            <span className="bg-background px-3 text-[10px] uppercase tracking-[0.3em] text-muted-foreground">oder</span>
+          </div>
+        </motion.div>
+
+        {/* Google-Login · Cloud-Sync */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.15 }}
+        >
+          <CloudSyncBanner variant="full" />
         </motion.div>
 
         {/* CLAWBUIS-Compact-Badge darunter */}
