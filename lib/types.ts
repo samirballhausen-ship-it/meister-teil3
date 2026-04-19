@@ -56,7 +56,8 @@ export interface Frage {
   liste?: ListePayload;
   musterantwort?: string;
   musterpunkte?: string[];
-  eselsbruecke?: string;
+  hinweis?: string;       // strategischer Denk-Ansatz (keine Antwort) · zeigt mit XP-Penalty
+  eselsbruecke?: string;  // kreative Merkhilfe · wird nach Antwort gezeigt
   tags: string[];
   sources: Source[];
   erstellt_am: string;

@@ -11,6 +11,7 @@ import type { Cluster, Frage, Thema, ThemaFrontmatter, StundenplanTag } from "./
 const CONTENT_DIR    = path.join(process.cwd(), "content");
 const THEMEN_DIR     = path.join(CONTENT_DIR, "themen");
 const FRAGEN_FILE    = path.join(CONTENT_DIR, "fragen", "master.json");
+const HINWEISE_FILE  = path.join(CONTENT_DIR, "fragen", "hinweise.json");
 const STUNDENPLAN_F  = path.join(CONTENT_DIR, "lehrplan", "stundenplan.json");
 
 // ─── Cache ─────────────────────────────────────────────────────────
@@ -21,9 +22,17 @@ let cacheSplan:  { tage: StundenplanTag[]; lehrgang: Record<string, unknown> } |
 
 export async function loadMaster() {
   if (cacheMaster) return cacheMaster;
-  const raw = await fs.readFile(FRAGEN_FILE, "utf-8");
-  cacheMaster = JSON.parse(raw);
-  return cacheMaster!;
+  const [rawMaster, rawHints] = await Promise.all([
+    fs.readFile(FRAGEN_FILE, "utf-8"),
+    fs.readFile(HINWEISE_FILE, "utf-8").catch(() => null),
+  ]);
+  const master = JSON.parse(rawMaster) as { version: number; fragen: Frage[]; gesamt: number; cluster_count: Record<string, number> };
+  if (rawHints) {
+    const { hinweise } = JSON.parse(rawHints) as { hinweise: Record<string, string> };
+    master.fragen = master.fragen.map((f) => ({ ...f, hinweis: f.hinweis ?? hinweise[f.id] }));
+  }
+  cacheMaster = master;
+  return cacheMaster;
 }
 
 export async function loadThemen(): Promise<Map<string, Thema>> {

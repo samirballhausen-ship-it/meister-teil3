@@ -10,7 +10,10 @@
  * - Endspurt-Modus: ≤ 7 Tage bis Prüfung → alle Fragen täglich rotieren.
  */
 
-import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { doc, getDoc, setDoc } from "firebase/firestore";
+import { db, APP_NS } from "./firebase";
+import { useAuth } from "./auth-context";
 import { type Cluster, type UserStats, LEVELS, getLevel } from "./types";
 
 // ─── Typen ─────────────────────────────────────────────────────────
@@ -226,7 +229,7 @@ function today(): string { return new Date().toISOString().slice(0, 10); }
 interface Ctx {
   progress: Record<string, FrageProgress>;
   stats: UserStats;
-  recordAnswer: (frageId: string, correct: boolean, respSec: number, partial?: boolean) => void;
+  recordAnswer: (frageId: string, correct: boolean, respSec: number, partial?: boolean, hintUsed?: boolean) => void;
   recordLessonComplete: (slug: string) => void;
   resetAll: () => void;
   getHFMastery: (cluster: Cluster, ids: string[]) => { avg: number; gesehen: number; gemeistert: number };
@@ -236,10 +239,16 @@ interface Ctx {
 
 const Context = createContext<Ctx | null>(null);
 
+const PROGRESS_COL = `progress-${APP_NS}`;
+const STATS_COL = `stats-${APP_NS}`;
+
 export function ProgressProvider({ children }: { children: ReactNode }) {
+  const { user, loading: authLoading } = useAuth();
   const [progress, setProgress] = useState<Record<string, FrageProgress>>({});
   const [stats, setStats] = useState<UserStats>(FRESH_STATS);
+  const lastUidRef = useRef<string | null>(null);
 
+  // Initial load aus localStorage · immer (instant cache)
   useEffect(() => {
     try {
       const p = localStorage.getItem(PROGRESS_KEY);
@@ -249,6 +258,41 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
     } catch {}
   }, []);
 
+  // Firestore-Sync bei Login
+  useEffect(() => {
+    if (authLoading || !user || user.isGuest) return;
+    if (lastUidRef.current === user.uid) return;
+    lastUidRef.current = user.uid;
+
+    (async () => {
+      try {
+        const [progSnap, statsSnap] = await Promise.all([
+          getDoc(doc(db, PROGRESS_COL, user.uid)),
+          getDoc(doc(db, STATS_COL, user.uid)),
+        ]);
+        if (progSnap.exists()) {
+          const cloud = progSnap.data() as Record<string, FrageProgress>;
+          setProgress(cloud);
+          localStorage.setItem(PROGRESS_KEY, JSON.stringify(cloud));
+        } else {
+          // leere Cloud: lokale Daten in Cloud pushen
+          const local = localStorage.getItem(PROGRESS_KEY);
+          if (local) await setDoc(doc(db, PROGRESS_COL, user.uid), JSON.parse(local));
+        }
+        if (statsSnap.exists()) {
+          const cloudS = statsSnap.data() as UserStats;
+          setStats({ ...FRESH_STATS, ...cloudS });
+          localStorage.setItem(STATS_KEY, JSON.stringify(cloudS));
+        } else {
+          const local = localStorage.getItem(STATS_KEY);
+          if (local) await setDoc(doc(db, STATS_COL, user.uid), JSON.parse(local));
+        }
+      } catch (err) {
+        console.warn("Progress cloud-sync skipped:", err);
+      }
+    })();
+  }, [user, authLoading]);
+
   const examPhase = useMemo(() => getExamPhase(), []);
   const daysLeft = useMemo(() => daysToExam(), []);
 
@@ -256,9 +300,14 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
     localStorage.setItem(PROGRESS_KEY, JSON.stringify(newP));
     localStorage.setItem(STATS_KEY,    JSON.stringify(newS));
     setProgress(newP); setStats(newS);
+    // Cloud-Sync fire-and-forget bei eingeloggtem User
+    if (user && !user.isGuest) {
+      setDoc(doc(db, PROGRESS_COL, user.uid), newP).catch(() => {});
+      setDoc(doc(db, STATS_COL,    user.uid), newS).catch(() => {});
+    }
   };
 
-  const recordAnswer = useCallback((frageId: string, correct: boolean, respSec: number, partial?: boolean) => {
+  const recordAnswer = useCallback((frageId: string, correct: boolean, respSec: number, partial?: boolean, hintUsed?: boolean) => {
     const now = Date.now();
     const prev = progress[frageId] ?? null;
     const attempt: AttemptRecord = { ts: now, correct, respSec, partial };
@@ -282,6 +331,8 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
     if (correct && !partial) xpAdd = 12 + (streak >= 3 ? 4 : 0);
     else if (partial)         xpAdd = 6;
     else                      xpAdd = 2;
+    // Hinweis-Nutzung: XP auf 60% (runden ab, min 1)
+    if (hintUsed) xpAdd = Math.max(1, Math.round(xpAdd * 0.6));
 
     const td = today();
     const newDailyProgress = stats.lastActiveDate === td ? stats.dailyGoalProgress + 1 : 1;

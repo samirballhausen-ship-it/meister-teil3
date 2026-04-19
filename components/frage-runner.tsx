@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ClawbuisCredit } from "@/components/clawbuis-badge";
-import { Check, X, ChevronRight, Sparkles, Target, PenLine, Plus, Calculator, Clock, Trophy, CheckCircle2, CircleMinus, XCircle } from "lucide-react";
+import { Check, X, ChevronRight, Sparkles, Target, PenLine, Plus, Calculator, Clock, Trophy, CheckCircle2, CircleMinus, XCircle, Lightbulb, Brain } from "lucide-react";
 
 interface Props {
   fragen: Frage[];
@@ -31,6 +31,7 @@ export function FrageRunner({ fragen, mode, timerSec }: Props) {
   const [done, setDone] = useState(false);
   const [remaining, setRemaining] = useState<number | null>(timerSec ?? null);
   const [xpBurst, setXpBurst] = useState<{ value: number; key: number } | null>(null);
+  const [hintShown, setHintShown] = useState(false);
   const startRef = useRef(Date.now());
 
   useEffect(() => {
@@ -48,10 +49,11 @@ export function FrageRunner({ fragen, mode, timerSec }: Props) {
   const last = idx === fragen.length - 1;
 
   const handle = (correct: boolean, respSec: number, partial?: boolean) => {
-    recordAnswer(cur.id, correct, respSec, partial);
+    recordAnswer(cur.id, correct, respSec, partial, hintShown);
 
-    // XP-Burst
-    const xpGained = correct && !partial ? 12 : partial ? 6 : 2;
+    // XP-Burst (mit Hinweis-Penalty: 60%)
+    let xpGained = correct && !partial ? 12 : partial ? 6 : 2;
+    if (hintShown) xpGained = Math.max(1, Math.round(xpGained * 0.6));
     setXpBurst({ value: xpGained, key: Date.now() });
     setTimeout(() => setXpBurst(null), 1200);
 
@@ -65,7 +67,7 @@ export function FrageRunner({ fragen, mode, timerSec }: Props) {
 
     setTimeout(() => {
       if (last) setDone(true);
-      else setIdx(idx + 1);
+      else { setIdx(idx + 1); setHintShown(false); }
     }, 400);
   };
 
@@ -135,7 +137,12 @@ export function FrageRunner({ fragen, mode, timerSec }: Props) {
               {cur.kontext}
             </div>
           )}
-          <h2 className="gravur text-xl md:text-2xl leading-tight mb-6">{cur.prompt}</h2>
+          <h2 className="gravur text-xl md:text-2xl leading-tight mb-4">{cur.prompt}</h2>
+
+          {/* Hinweis-Feld · nur bei vorhandenem Hinweis */}
+          {cur.hinweis && (
+            <HinweisPanel hinweis={cur.hinweis} shown={hintShown} onReveal={() => setHintShown(true)} />
+          )}
 
           {(cur.typ === "mc-4" || cur.typ === "mc-5" || cur.typ === "wahr-falsch") && <MCUI frage={cur} onAnswer={handle} />}
           {cur.typ === "liste" && <ListeUI frage={cur} onAnswer={handle} />}
@@ -270,11 +277,7 @@ function MCUI({ frage, onAnswer }: { frage: Frage; onAnswer: (c: boolean, t: num
             </p>
             {shuffled[picked!]?.erklaerung && <p className="text-sm text-foreground/95 mb-2">{shuffled[picked!].erklaerung}</p>}
             {frage.musterantwort && <p className="text-xs text-muted-foreground italic leading-relaxed">{frage.musterantwort}</p>}
-            {frage.eselsbruecke && (
-              <p className="mt-3 text-xs text-accent flex items-start gap-1.5">
-                <Sparkles className="h-3 w-3 mt-0.5 shrink-0" /> {frage.eselsbruecke}
-              </p>
-            )}
+            {frage.eselsbruecke && <LernhilfeCard text={frage.eselsbruecke} />}
           </motion.div>
         )}
       </AnimatePresence>
@@ -626,5 +629,86 @@ function ResultScreen({ result, mode, duration }: { result: Result; mode: string
         <ClawbuisCredit />
       </motion.div>
     </div>
+  );
+}
+
+// ─── Hinweis-Panel · öffnet mit XP-Penalty ────────────────────
+
+function HinweisPanel({ hinweis, shown, onReveal }: { hinweis: string; shown: boolean; onReveal: () => void }) {
+  return (
+    <div className="mb-6">
+      <AnimatePresence mode="wait">
+        {!shown ? (
+          <motion.button
+            key="btn"
+            onClick={onReveal}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            whileHover={{ scale: 1.01 }}
+            whileTap={{ scale: 0.99 }}
+            className="w-full text-left rounded-xl border border-dashed border-accent/40 bg-accent/5 hover:bg-accent/10 hover:border-accent/70 transition-all p-3 flex items-center gap-2.5 group"
+          >
+            <div className="h-7 w-7 rounded-lg bg-accent/15 border border-accent/40 flex items-center justify-center shrink-0">
+              <Lightbulb className="h-3.5 w-3.5 text-accent" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-xs text-accent font-medium">Hinweis öffnen</p>
+              <p className="text-[10px] text-muted-foreground">Weniger XP · keine Antwort, nur ein Denk-Ansatz</p>
+            </div>
+            <ChevronRight className="h-3.5 w-3.5 text-accent/60 group-hover:translate-x-0.5 transition-transform" />
+          </motion.button>
+        ) : (
+          <motion.div
+            key="hint"
+            initial={{ opacity: 0, height: 0, y: -6 }}
+            animate={{ opacity: 1, height: "auto", y: 0 }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+            className="rounded-xl border border-accent/50 bg-gradient-to-br from-accent/10 via-accent/5 to-transparent p-3.5 overflow-hidden"
+          >
+            <div className="flex items-start gap-2.5">
+              <div className="h-7 w-7 rounded-lg bg-accent/20 border border-accent/50 flex items-center justify-center shrink-0 animate-pulse-glow">
+                <Lightbulb className="h-3.5 w-3.5 text-accent" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-[10px] uppercase tracking-[0.25em] text-accent font-medium mb-1">Hinweis · XP −40 %</p>
+                <p className="text-sm text-foreground/95 leading-relaxed">{hinweis}</p>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+// ─── Lernhilfe-Card · kreative Merkhilfe (nach Antwort) ──────
+
+function LernhilfeCard({ text }: { text: string }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 8, scale: 0.98 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ duration: 0.4, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
+      className="mt-4 relative rounded-xl overflow-hidden"
+      style={{
+        background: "linear-gradient(135deg, oklch(0.18 0.12 75 / 0.3), oklch(0.12 0.06 160 / 0.25))",
+        border: "1px solid oklch(0.7 0.14 75 / 0.5)",
+        boxShadow: "0 0 24px oklch(0.7 0.14 75 / 0.15), inset 0 0 20px oklch(0.7 0.14 160 / 0.08)",
+      }}
+    >
+      <div className="absolute top-0 right-0 w-24 h-24 rounded-full bg-accent/15 blur-2xl pointer-events-none" />
+      <div className="relative p-3.5 flex items-start gap-2.5">
+        <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-accent to-accent/50 border border-accent/60 flex items-center justify-center shrink-0"
+             style={{ boxShadow: "0 0 12px oklch(0.7 0.14 75 / 0.4)" }}>
+          <Brain className="h-4 w-4 text-background" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="gravur text-[10px] uppercase tracking-[0.3em] text-accent font-medium mb-1">Merkhilfe</p>
+          <p className="text-sm text-foreground leading-relaxed italic">{text}</p>
+        </div>
+      </div>
+    </motion.div>
   );
 }
