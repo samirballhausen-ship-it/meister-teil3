@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { motion } from "motion/react";
 import { useProfile } from "@/lib/profile-store";
+import { useAuth } from "@/lib/auth-context";
 import { useProgress, getLevel, LEVELS } from "@/lib/progress-context";
 import { ACHIEVEMENTS } from "@/lib/types";
 import { NavBar } from "@/components/nav-bar";
@@ -13,15 +14,27 @@ import { LevelEmblem } from "@/components/level-emblem";
 import { LevelProgressionModal } from "@/components/level-progression-modal";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { LogOut, Trophy, Flame, Target, BookOpen, ChevronRight } from "lucide-react";
+import { LogOut, Trophy, Flame, Target, BookOpen, ChevronRight, Cloud, Trash2 } from "lucide-react";
 
 interface Props { gesamtFragen: number; gesamtThemen: number; }
 
 export function ProfilSeite({ gesamtFragen, gesamtThemen }: Props) {
   const router = useRouter();
   const { profile, setProfile } = useProfile();
+  const { user, signOut } = useAuth();
   const { stats, resetAll } = useProgress();
   const [levelModalOpen, setLevelModalOpen] = useState(false);
+
+  const isLoggedIn = !!user && !user.isGuest;
+
+  async function handleSignOut() {
+    if (!confirm("Abmelden? Dein Fortschritt bleibt in der Cloud erhalten, wird aber lokal gelöscht — beim nächsten Login ist er wieder da.")) return;
+    await signOut();
+    // Lokalen Cache leeren, damit kein Fremd-Profil liegenbleibt
+    resetAll();
+    setProfile(null);
+    router.push("/onboarding");
+  }
 
   if (!profile) return null;
 
@@ -135,21 +148,53 @@ export function ProfilSeite({ gesamtFragen, gesamtThemen }: Props) {
         {/* CLAWBUIS Portal */}
         <ClawbuisPortal />
 
-        {/* Reset */}
+        {/* Account & Reset */}
         <Card className="border-border/40 bg-card/30">
-          <CardContent className="p-4 space-y-2">
+          <CardContent className="p-4 space-y-3">
+            {/* Account-Status */}
+            {isLoggedIn ? (
+              <div className="rounded-lg border border-accent/30 bg-accent/5 p-3 flex items-center gap-3">
+                {user?.photoURL ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={user.photoURL} alt="" className="h-10 w-10 rounded-lg object-cover border border-accent/40" />
+                ) : (
+                  <div className="h-10 w-10 rounded-lg bg-accent/20 border border-accent/40 flex items-center justify-center">
+                    <span className="gravur text-sm font-semibold text-accent">{(user?.displayName ?? user?.email ?? "U").slice(0, 1).toUpperCase()}</span>
+                  </div>
+                )}
+                <div className="flex-1 min-w-0">
+                  <p className="text-[10px] uppercase tracking-[0.25em] text-accent flex items-center gap-1"><Cloud className="h-2.5 w-2.5" /> Cloud-Sync aktiv</p>
+                  <p className="text-xs text-foreground truncate">{user?.email ?? user?.displayName}</p>
+                </div>
+              </div>
+            ) : (
+              <div className="rounded-lg border border-border bg-card/40 p-3 text-center">
+                <p className="text-xs text-muted-foreground">Du spielst lokal · kein Cloud-Sync</p>
+              </div>
+            )}
+
+            {isLoggedIn && (
+              <Button
+                variant="outline"
+                className="w-full border-accent/40 text-accent hover:bg-accent/10 hover:text-accent"
+                onClick={handleSignOut}
+              >
+                <LogOut className="mr-2 h-4 w-4" /> Abmelden
+              </Button>
+            )}
+
             <Button
               variant="outline"
               className="w-full border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive"
               onClick={() => {
-                if (confirm("Wirklich alles zurücksetzen? Profil + Fortschritt + Stats löschen.")) {
+                if (confirm("Wirklich alles zurücksetzen? Profil + Fortschritt + Stats werden lokal gelöscht.")) {
                   resetAll();
                   setProfile(null);
                   router.push("/onboarding");
                 }
               }}
             >
-              <LogOut className="mr-2 h-4 w-4" /> Alles zurücksetzen
+              <Trash2 className="mr-2 h-4 w-4" /> Alles zurücksetzen
             </Button>
           </CardContent>
         </Card>
