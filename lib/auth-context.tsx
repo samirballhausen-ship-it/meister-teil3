@@ -12,6 +12,8 @@ import { createContext, useContext, useEffect, useState, type ReactNode } from "
 import {
   onAuthStateChanged,
   signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   signOut as firebaseSignOut,
@@ -66,6 +68,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return;
     }
 
+    // Redirect-Result einsammeln (Mobile-Fallback nach signInWithRedirect)
+    getRedirectResult(auth).catch((err) => {
+      console.warn("Auth redirect result skipped:", err);
+    });
+
     const unsub = onAuthStateChanged(auth, async (fu) => {
       if (fu) {
         setUser(toAppUser(fu));
@@ -94,9 +101,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   async function signInWithGoogle() {
-    const result = await signInWithPopup(auth, googleProvider);
-    localStorage.removeItem(GUEST_KEY);
-    setUser(toAppUser(result.user));
+    const isMobile = typeof window !== "undefined" &&
+      /Android|iPhone|iPad|iPod|Opera Mini|Mobile/i.test(window.navigator.userAgent);
+    try {
+      const result = await signInWithPopup(auth, googleProvider);
+      localStorage.removeItem(GUEST_KEY);
+      setUser(toAppUser(result.user));
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      // Popup geblockt oder Mobile ohne Popup-Support → Redirect-Fallback
+      if (isMobile || msg.includes("popup-blocked") || msg.includes("popup-closed") || msg.includes("cancelled-popup-request")) {
+        await signInWithRedirect(auth, googleProvider);
+        return;
+      }
+      throw err;
+    }
   }
 
   async function signInWithEmail(email: string, password: string) {
