@@ -1,0 +1,85 @@
+{
+  "lehrgang": {
+    "nr": "230929",
+    "titel": "Meistervorbereitung Teil III",
+    "untertitel": "Betriebswirtschaftliche, kaufmännische und rechtliche Kenntnisse",
+    "ort": "HWK Wiesbaden · Berufsbildungs- und Technologiezentrum Wiesbaden I",
+    "adresse": "Brunhildenstraße 110, 65189 Wiesbaden",
+    "leitung": "Christine Schaberger",
+    "kurs_zeitraum": { "start": "2026-04-13", "ende": "2026-05-08" },
+    "pruefung_datum": "2026-05-09",
+    "kritischer_hinweis": "Prüfung ist nur 1 Tag nach Kursende. KEIN Puffer. Content muss tages-inkrementell einfließen, nicht wochenweise.",
+    "modus": "Vollzeit Präsenz oder wahlweise virtuelles Klassenzimmer",
+    "zeiten_pro_tag": [
+      { "ue": "1+2",  "von": "07:30", "bis": "09:00" },
+      { "ue": "3+4",  "von": "09:35", "bis": "10:45" },
+      { "ue": "5+6",  "von": "11:00", "bis": "12:30" },
+      { "ue": "7+8",  "von": "13:00", "bis": "14:30" },
+      { "ue": "9+10", "von": "14:45", "bis": "16:15" }
+    ]
+  },
+  "faecher": {
+    "WW": { "label": "Wettbewerbsfähigkeit von Unternehmen beurteilen", "cluster": ["marketing-markt", "rechnungswesen-buchfuehrung", "kalkulation-kosten", "steuer-recht"] },
+    "GÜ": { "label": "Gründungs- und Übernahmeaktivitäten", "cluster": ["unternehmensgruendung", "steuer-recht"] },
+    "UF": { "label": "Unternehmensführungsstrategien entwickeln", "cluster": ["unternehmensfuehrung"] }
+  },
+  "dozenten": [
+    { "id": "schaberger", "name": "Christine Schaberger", "rolle": "Lehrgangsleitung" },
+    { "id": "lipfert",    "name": "Annette Lipfert" },
+    { "id": "tatzel",     "name": "Beate Tatzel" },
+    { "id": "arnim",      "name": "Nicolas Frhr. v. Arnim" },
+    { "id": "breier",     "name": "Reinhardt Breier", "zusatz": "ass.jur/ra, Fachwirt, Ökonom · Steuerwesen" },
+    { "id": "hawner",     "name": "Hubert Hawner" }
+  ],
+  "tage": [
+    {
+      "nr": 1, "datum": "2026-04-13", "wochentag": "Mo",
+      "themen_ids": ["rechnungswesen-grundlagen", "institutionen-gruendung"],
+      "dozenten": ["schaberger", "lipfert"],
+      "materialien": [
+        "Teilbereiche des betrieblichen Rechnungswesens - Übersicht als pdf.pdf",
+        "Businessplan.pdf",
+        "Unterrichtsmaterial HF 2.10.pdf"
+      ]
+    },
+    {
+      "nr": 2, "datum": "2026-04-14", "wochentag": "Di",
+      "themen_ids": ["gob-grundsaetze", "doppelte-buchfuehrung", "bruttolohn-netto"],
+      "dozenten": ["schaberger", "tatzel"],
+      "materialien": ["Einführung GOB.pdf", "Unterricht Schaberger", "Tatzel Unterricht PDF"]
+    },
+    {
+      "nr": 3, "datum": "2026-04-15", "wochentag": "Mi",
+      "themen_ids": ["marketing-grundlagen", "swot-analyse"],
+      "dozenten": ["lipfert", "tatzel"],
+      "materialien": ["HF 3.2 Handout - Marketing & Marktforschung.pdf", "MV Teil III HF 3.2 al.pdf", "Aufgaben HF 2.10.pdf"]
+    },
+    {
+      "nr": 4, "datum": "2026-04-16", "wochentag": "Do",
+      "themen_ids": ["unternehmensziele", "rechtsformen"],
+      "dozenten": ["arnim"],
+      "materialien": [
+        "MV_Kurs_Wiesbaden_Teil_III_Unternehmensziele.pdf",
+        "MV_Kurs_Wiesbaden_Teil_III_Unternehmensanalyse.pdf",
+        "Zielbeziehungen_Definition.pdf",
+        "Rechtsformen_Welche_Arten.pdf",
+        "Prüfungsfragen_MV_Kurs_III_Wiesbaden_24022026.pdf (41 Fragen)",
+        "Prüfungsfragen_Lösungen.pdf",
+        "Probeklausur (57 Fotos)"
+      ]
+    },
+    {
+      "nr": 5, "datum": "2026-04-17", "wochentag": "Fr",
+      "themen_ids": ["eigenkapital-rentabilitaet", "produktive-stunden"],
+      "dozenten": ["schaberger", "tatzel"],
+      "materialien": ["Einführung Inventar.pdf", "Unterrichtkomplett.pdf (Bilanzanalyse · produktive Stunden)"]
+    },
+    {
+      "nr": 6, "datum": "2026-04-18", "wochentag": "Sa",
+      "themen_ids": ["steuer-ueberblick", "mehrwertsteuer-system"],
+      "dozenten": ["breier"],
+      "materialien": ["HWK Wi_SteuerR_2023_06_17.pdf (Reinhardt Breier · 8 Kapitel)"]
+    }
+  ],
+  "tage_kommend": "Der Kurs läuft bis 2026-05-08. Neue Unterrichtstage werden tages-inkrementell als neue Einträge in 'tage' und 'themen/' ergänzt. Keine Wochen-Blöcke."
+}

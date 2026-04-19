@@ -1,0 +1,389 @@
+{
+  "version": 2,
+  "generiert_am": "2026-04-19",
+  "letzte_aktualisierung": "2026-04-19",
+  "hinweis": "Single Source of Truth aller Fragen. De-dupliziert. Jede Quelle hat eigenen Eintrag in sources[]. Bei Widersprüchen zwischen Quellen: aktuelle Rechtslage gilt, Legacy-Wert als Note.",
+  "gesamt": 30,
+  "cluster_count": {
+    "unternehmensgruendung": 9,
+    "unternehmensfuehrung": 5,
+    "marketing-markt": 4,
+    "rechnungswesen-buchfuehrung": 5,
+    "kalkulation-kosten": 4,
+    "steuer-recht": 3
+  },
+  "fragen": [
+    {
+      "id": "q-0001",
+      "typ": "liste",
+      "thema": "institutionen-gruendung",
+      "cluster": "unternehmensgruendung",
+      "schwierigkeit": 3,
+      "prompt": "Beschreiben Sie, welche Institutionen Sie für eine zukünftige Unternehmensgründung im Handwerk benötigen. Nennen Sie hier mindestens 7 Körperschaften öffentlichen Rechts.",
+      "liste": { "mindestanzahl": 7, "muster_items": ["Handwerkskammer (HWK)", "Industrie- und Handelskammer (IHK)", "Berufsgenossenschaft der Handwerke", "Finanzamt", "Krankenkassen", "Agentur für Arbeit", "Gewerbeaufsichtsamt"] },
+      "musterantwort": "Siehe Thema [institutionen-gruendung].",
+      "musterpunkte": ["HWK", "IHK", "Berufsgenossenschaft", "Finanzamt", "Krankenkasse", "Agentur für Arbeit", "Gewerbeaufsichtsamt"],
+      "eselsbruecke": "Gewerbeamt meldet automatisch bei IHK, Finanzamt und BG — 1 Meldung, 3 Türen.",
+      "tags": ["gruendung", "institutionen", "koerperschaften"],
+      "sources": [{ "quellen_id": "wiesbaden-klausur-2026-02-24", "frage_nr": 1, "datei": "Prüfungsfragen_MV_Kurs_III_Wiesbaden_24022026.pdf", "seite": 1 }],
+      "erstellt_am": "2026-04-19"
+    },
+    {
+      "id": "q-0002",
+      "typ": "liste",
+      "thema": "unternehmensgruendung",
+      "cluster": "unternehmensgruendung",
+      "schwierigkeit": 3,
+      "prompt": "Benennen Sie die Anforderungen für eine Unternehmensgründung, wenn Sie für Ihr zukünftiges Unternehmen Fremdkapital beschaffen müssen.",
+      "liste": { "mindestanzahl": 6, "muster_items": ["Businessplan", "Bonitätsprüfung", "Sicherheiten", "Rechtsform", "Eigenkapitalquote", "Erfahrung & Qualifikation", "Marktfähigkeit", "Liquiditätsplanung"] },
+      "musterpunkte": ["Businessplan", "Bonität", "Sicherheiten", "Rechtsform", "Eigenkapitalquote", "Qualifikation", "Marktfähigkeit", "Liquidität"],
+      "eselsbruecke": "Bank fragt: kann zurückzahlen (Businessplan) · was wenn nicht (Sicherheiten)?",
+      "tags": ["fremdkapital", "finanzierung"],
+      "sources": [{ "quellen_id": "wiesbaden-klausur-2026-02-24", "frage_nr": 2 }],
+      "erstellt_am": "2026-04-19"
+    },
+    {
+      "id": "q-0003",
+      "typ": "offen", "thema": "rechtsformen", "cluster": "unternehmensgruendung", "schwierigkeit": 3,
+      "prompt": "Nennen Sie die Rechtsformgruppen, die Sie zur Umsetzung einer Unternehmensgründung anwenden können, und erläutern Sie deren Haftungsansprüche.",
+      "musterpunkte": ["Einzelunternehmen", "OHG", "KG", "GmbH", "AG", "Genossenschaft", "unbeschränkt vs beschränkt"],
+      "eselsbruecke": "Je mehr Haftungsbeschränkung, desto mehr Gründungsaufwand & Kapital.",
+      "tags": ["rechtsform", "haftung"],
+      "sources": [{ "quellen_id": "wiesbaden-klausur-2026-02-24", "frage_nr": 3 }], "erstellt_am": "2026-04-19"
+    },
+    {
+      "id": "q-0004",
+      "typ": "offen", "thema": "rechtsformen", "cluster": "unternehmensgruendung", "schwierigkeit": 2,
+      "prompt": "Welche Einlagen müssen Sie bei den jeweiligen Rechtsformgruppen bereitstellen und welche Möglichkeiten können Sie als Unternehmensgründer wählen?",
+      "musterpunkte": ["e.K. 0€", "GmbH 25.000 (12.500)", "AG 50.000", "OHG frei", "KG Kommanditist Hafteinlage"],
+      "tags": ["einlage", "stammkapital"],
+      "sources": [{ "quellen_id": "wiesbaden-klausur-2026-02-24", "frage_nr": 4 }], "erstellt_am": "2026-04-19"
+    },
+    {
+      "id": "q-0005",
+      "typ": "liste", "thema": "unternehmensgruendung", "cluster": "unternehmensgruendung", "schwierigkeit": 2,
+      "prompt": "Benennen Sie mindestens 10 Eigenschaften, die Sie als Unternehmensgründer aufweisen müssen, um erfolgreich ein Unternehmen führen zu können.",
+      "liste": { "mindestanzahl": 10, "muster_items": ["Fachkompetenz", "Unternehmerisches Denken", "Führungskompetenz", "Belastbarkeit", "Risikobereitschaft", "Entscheidungsstärke", "Kommunikationsfähigkeit", "BWL-Grundwissen", "Selbstdisziplin", "Kundenorientierung", "Lernbereitschaft", "Netzwerkfähigkeit"] },
+      "tags": ["gruender", "soft-skills"],
+      "sources": [{ "quellen_id": "wiesbaden-klausur-2026-02-24", "frage_nr": 5 }], "erstellt_am": "2026-04-19"
+    },
+    {
+      "id": "q-0006",
+      "typ": "offen", "thema": "unternehmensgruendung", "cluster": "unternehmensgruendung", "schwierigkeit": 3,
+      "prompt": "Beschreiben Sie die Aufgabe eines Gesellschafters und die Aufgabe eines Geschäftsführers — und wie sie sich unterscheiden.",
+      "musterpunkte": ["Gesellschafter = Eigentümer", "Geschäftsführer = Leiter", "GF § 43 GmbHG"],
+      "eselsbruecke": "Gesellschafter = Besitzer. Geschäftsführer = Chef. Kann Person-Union sein.",
+      "tags": ["gesellschafter", "gf", "gmbh-recht"],
+      "sources": [{ "quellen_id": "wiesbaden-klausur-2026-02-24", "frage_nr": 6 }], "erstellt_am": "2026-04-19"
+    },
+    {
+      "id": "q-0007",
+      "typ": "liste", "thema": "unternehmensgruendung", "cluster": "unternehmensgruendung", "schwierigkeit": 2,
+      "prompt": "Benennen Sie 5 Qualifikationen, die ein Geschäftsführer für das Unternehmen mitbringen sollte.",
+      "liste": { "mindestanzahl": 5, "muster_items": ["Fachliche Qualifikation (Meisterbrief § 7 HwO)", "Kaufmännische Kenntnisse", "Führungskompetenz", "Rechtskenntnisse", "Entscheidungsfähigkeit"] },
+      "tags": ["gf", "qualifikation", "hwo"],
+      "sources": [{ "quellen_id": "wiesbaden-klausur-2026-02-24", "frage_nr": 8 }], "erstellt_am": "2026-04-19"
+    },
+    {
+      "id": "q-0008",
+      "typ": "offen", "thema": "unternehmensziele", "cluster": "unternehmensfuehrung", "schwierigkeit": 3,
+      "prompt": "Wozu dienen Ziele und beschreiben Sie die Begriffe Unternehmensziel, Unternehmensleitbild, Unternehmenskommunikation und Unternehmensphilosophie.",
+      "musterpunkte": ["Ziel = konkret messbar", "Leitbild = Vision+Werte", "Kommunikation = Außensprache", "Philosophie = Grundhaltung"],
+      "eselsbruecke": "Philosophie → Leitbild → Ziele → Kommunikation.",
+      "tags": ["ziele", "leitbild"],
+      "sources": [{ "quellen_id": "wiesbaden-klausur-2026-02-24", "frage_nr": 14 }], "erstellt_am": "2026-04-19"
+    },
+    {
+      "id": "q-0009",
+      "typ": "offen", "thema": "zielbeziehungen", "cluster": "unternehmensfuehrung", "schwierigkeit": 3,
+      "prompt": "Differenzieren Sie die Begriffe komplementäre Ziele, indifferente Ziele, konfliktäre Ziele — und beschreiben Sie jeweils ein Beispiel.",
+      "musterpunkte": ["komplementär", "indifferent", "konfliktär", "Beispiel pro Typ"],
+      "eselsbruecke": "Hilft (kompl.) · egal (indiff.) · stört (konfl.)",
+      "tags": ["zielbeziehungen", "strategie"],
+      "sources": [{ "quellen_id": "wiesbaden-klausur-2026-02-24", "frage_nr": 22 }], "erstellt_am": "2026-04-19"
+    },
+    {
+      "id": "q-0010",
+      "typ": "liste", "thema": "unternehmensziele", "cluster": "unternehmensfuehrung", "schwierigkeit": 2,
+      "prompt": "Welche Interessengruppen als Partner sind zu benennen für ein Unternehmen? Nennen Sie hier mindestens 5.",
+      "liste": { "mindestanzahl": 5, "muster_items": ["Kunden", "Mitarbeiter", "Lieferanten", "Banken", "Staat", "Gesellschafter", "Öffentlichkeit"] },
+      "tags": ["stakeholder"],
+      "sources": [{ "quellen_id": "wiesbaden-klausur-2026-02-24", "frage_nr": 17 }], "erstellt_am": "2026-04-19"
+    },
+    {
+      "id": "q-0011",
+      "typ": "offen", "thema": "marketing-grundlagen", "cluster": "marketing-markt", "schwierigkeit": 2,
+      "prompt": "Erkläre den Unterschied zwischen Marktanalyse und Marktbeobachtung. Nenne je ein Beispiel.",
+      "musterpunkte": ["Analyse = Foto Zeitpunkt", "Beobachtung = Film Zeitraum"],
+      "eselsbruecke": "Foto vs. Film.",
+      "tags": ["marktforschung"],
+      "sources": [{ "quellen_id": "hf32-handout-lipfert" }], "erstellt_am": "2026-04-19"
+    },
+    {
+      "id": "q-0012",
+      "typ": "offen", "thema": "swot-analyse", "cluster": "marketing-markt", "schwierigkeit": 2,
+      "prompt": "Beschreiben Sie die SWOT-Analyse. Welche Aufgabe erfüllt sie und welche Kriterien werden im Wesentlichen betrachtet?",
+      "musterpunkte": ["S intern+", "W intern-", "O extern+", "T extern-", "Strategie-Matrix 2x2"],
+      "eselsbruecke": "Intern/extern × positiv/negativ = 4 Felder = 4 Strategien.",
+      "tags": ["swot"],
+      "sources": [{ "quellen_id": "hf32-handout-lipfert" }], "erstellt_am": "2026-04-19"
+    },
+    {
+      "id": "q-0013",
+      "typ": "liste", "thema": "rechnungswesen-grundlagen", "cluster": "rechnungswesen-buchfuehrung", "schwierigkeit": 1,
+      "prompt": "Nennen Sie die 4 Teilbereiche des betrieblichen Rechnungswesens.",
+      "liste": { "mindestanzahl": 4, "muster_items": ["Finanzbuchhaltung", "Kosten- und Leistungsrechnung (KLR)", "Betriebliche Statistik", "Planungsrechnung"] },
+      "eselsbruecke": "Vergangenheit → Zuordnung → Vergleich → Zukunft.",
+      "tags": ["rechnungswesen", "teilbereiche"],
+      "sources": [{ "quellen_id": "tag1-rechnungswesen-uebersicht" }], "erstellt_am": "2026-04-19"
+    },
+    {
+      "id": "q-0014",
+      "typ": "mc-4", "thema": "doppelte-buchfuehrung", "cluster": "rechnungswesen-buchfuehrung", "schwierigkeit": 2,
+      "prompt": "Ab welchen Schwellenwerten ist ein Gewerbebetrieb zur doppelten Buchführung verpflichtet (§ 141 AO, aktuelle Fassung)?",
+      "antworten": [
+        { "text": "500.000 € Umsatz oder 50.000 € Gewinn", "korrekt": false, "erklaerung": "Alte Werte (bis ca. 2016)." },
+        { "text": "600.000 € Umsatz oder 60.000 € Gewinn", "korrekt": false, "erklaerung": "Alte Werte — galten bis Wachstumschancengesetz 2024. Viele ältere Lehrbücher enthalten diese Zahl noch." },
+        { "text": "800.000 € Umsatz oder 80.000 € Gewinn", "korrekt": true, "erklaerung": "Aktuelle Schwellen nach Wachstumschancengesetz 2024 (§ 141 AO)." },
+        { "text": "1.000.000 € Umsatz oder 100.000 € Gewinn", "korrekt": false, "erklaerung": "Zu hoch." }
+      ],
+      "musterantwort": "§ 141 AO in aktueller Fassung: doppelte Buchführung Pflicht ab **800.000 € Jahres-Umsatz** ODER **80.000 € Jahres-Gewinn** (Gewerbebetrieb). Kaufleute nach HGB § 238 sowieso immer.",
+      "musterpunkte": ["800.000 Umsatz", "80.000 Gewinn", "§ 141 AO", "Wachstumschancengesetz 2024"],
+      "eselsbruecke": "Gewinn-Schwelle = 10 % der Umsatz-Schwelle. Ab 2024 neue Werte: 800/80.",
+      "tags": ["buchfuehrung", "ao", "schwellenwert"],
+      "sources": [
+        { "quellen_id": "tag2-gob", "datei": "Einführung GOB.pdf" },
+        { "quellen_id": "tag5-unterrichtkomplett", "seite": 3, "note": "Samir handschriftlich: 800.000 / 80.000" }
+      ],
+      "erstellt_am": "2026-04-19",
+      "korrigiert_am": "2026-04-19",
+      "korrektur_note": "Von alter Schwelle 600/60 auf aktuelle 800/80 korrigiert (Wachstumschancengesetz 2024). Abweichung zwischen älteren Lehrbüchern und aktueller Gesetzeslage dokumentiert."
+    },
+    {
+      "id": "q-0015",
+      "typ": "mc-5", "thema": "rechnungswesen-grundlagen", "cluster": "kalkulation-kosten", "schwierigkeit": 2,
+      "prompt": "Was sind die 3 Bereiche der Kostenrechnung?",
+      "antworten": [
+        { "text": "Kostenartenrechnung, Kostenstellenrechnung, Kostenträgerrechnung", "korrekt": true, "erklaerung": "Die klassische Dreiteilung." },
+        { "text": "Kostenartenrechnung, Kalkulation, Kostenträgerrechnung", "korrekt": false },
+        { "text": "Kostenartenrechnung, Buchführung, Kostenträgerrechnung", "korrekt": false },
+        { "text": "Bilanz, Kostenstellenrechnung, Kostenträgerrechnung", "korrekt": false },
+        { "text": "Kostenartenrechnung, Kostenstellenrechnung, Gewinn- und Verlustrechnung", "korrekt": false }
+      ],
+      "musterpunkte": ["Kostenarten", "Kostenstellen", "Kostenträger"],
+      "eselsbruecke": "WAS (Arten) → WO (Stellen) → FÜR WAS (Träger).",
+      "tags": ["klr", "kostenrechnung"],
+      "sources": [{ "quellen_id": "probeklausur-2026-04-16", "frage_nr": 26, "datei": "probeklausr/2026-04-16 11.31.42.jpeg" }],
+      "erstellt_am": "2026-04-19"
+    },
+    {
+      "id": "q-0016",
+      "typ": "mc-5", "thema": "gob-grundsaetze", "cluster": "rechnungswesen-buchfuehrung", "schwierigkeit": 2,
+      "prompt": "Nach der Grundregel für die ordnungsmäßige Buchführung muss die Buchführung so beschaffen sein, dass …",
+      "antworten": [
+        { "text": "… sie dem Betriebsinhaber jederzeit einen Überblick über Vermögens- und Ertragslage vermitteln kann", "korrekt": false },
+        { "text": "… sie nur dem Betriebsprüfer des Finanzamts mit angemessenem Zeitaufwand einen Überblick vermitteln kann", "korrekt": false },
+        { "text": "… sie jedem sachverständigen Dritten innerhalb angemessener Zeit einen Überblick über die Geschäftsvorfälle und die Lage des Unternehmens vermitteln kann", "korrekt": true, "erklaerung": "Formulierung aus § 238 HGB." },
+        { "text": "… der sachliche und materielle Inhalt stimmt und keine grundlegenden Mängel aufweist", "korrekt": false },
+        { "text": "… vor allem die Formvorschriften beachtet wurden, die die einschlägigen Gesetze vorsehen", "korrekt": false }
+      ],
+      "musterpunkte": ["sachverständiger Dritter", "angemessene Zeit", "§ 238 HGB"],
+      "tags": ["gob", "hgb"],
+      "sources": [{ "quellen_id": "probeklausur-2026-04-16", "frage_nr": 25 }],
+      "erstellt_am": "2026-04-19"
+    },
+    {
+      "id": "q-0017",
+      "typ": "offen", "thema": "mehrwertsteuer-system", "cluster": "steuer-recht", "schwierigkeit": 2,
+      "prompt": "Erklären Sie die Zahllast an das Finanzamt: wie hängen Vorsteuer und Umsatzsteuer zusammen?",
+      "musterantwort": "Vorsteuer (aus Einkäufen) holst du dir vom Finanzamt. Umsatzsteuer (aus Verkäufen) führst du ans FA ab. **Zahllast = Umsatzsteuer − Vorsteuer**. Besteuert wird damit nur die Wertschöpfung, nicht der Umsatz.",
+      "musterpunkte": ["Vorsteuer ← FA", "USt → FA", "Zahllast = USt − Vorsteuer", "Wertschöpfung besteuert"],
+      "eselsbruecke": "Vorsteuer holen, Umsatzsteuer abführen. Differenz ist Zahllast.",
+      "tags": ["umsatzsteuer", "vorsteuer", "zahllast"],
+      "sources": [{ "quellen_id": "tag5-unterrichtkomplett", "seite": 2 }, { "quellen_id": "tag6-steuer-breier", "seite_ab": 8 }],
+      "erstellt_am": "2026-04-19"
+    },
+    {
+      "id": "q-0018",
+      "typ": "rechnen", "thema": "mehrwertsteuer-system", "cluster": "steuer-recht", "schwierigkeit": 2,
+      "prompt": "Ein Unternehmer hat im Monat folgende Eingangsrechnungen: 190 €, 100 €, 250 € Vorsteuer. Und folgende Ausgangs-USt: 570 €, 1.200 €, 130 €. Berechnen Sie die Zahllast an das Finanzamt.",
+      "rechnen": {
+        "formel": "Zahllast = Σ(USt Verkäufe) − Σ(Vorsteuer Einkäufe)",
+        "eingabe_felder": [{ "label": "Zahllast in €", "einheit": "€" }],
+        "loesung_wert": 1360,
+        "loesung_toleranz": 0,
+        "zwischenschritte": [
+          "Summe Vorsteuer: 190 + 100 + 250 = 540 €",
+          "Summe USt: 570 + 1.200 + 130 = 1.900 €",
+          "Zahllast: 1.900 − 540 = 1.360 €"
+        ]
+      },
+      "musterantwort": "Zahllast = 1.900 € − 540 € = **1.360 €** an das Finanzamt abzuführen.",
+      "tags": ["umsatzsteuer", "rechenaufgabe"],
+      "sources": [{ "quellen_id": "tag5-unterrichtkomplett", "seite": 2 }],
+      "erstellt_am": "2026-04-19"
+    },
+    {
+      "id": "q-0019",
+      "typ": "offen", "thema": "mehrwertsteuer-system", "cluster": "steuer-recht", "schwierigkeit": 3,
+      "prompt": "Erklären Sie den Unterschied zwischen Soll-Besteuerung (§ 16 I UStG) und Ist-Besteuerung (§ 20 UStG). Welche Voraussetzungen gelten für die Ist-Besteuerung?",
+      "musterantwort": "**Soll-Besteuerung (Regel):** USt entsteht zum Zeitpunkt der Leistung → Liquiditätsrisiko.\n\n**Ist-Besteuerung (Ausnahme, § 20 UStG):** USt entsteht erst bei Zahlung durch den Kunden. Voraussetzung (eine reicht): vorjähriger Gesamtumsatz ≤ 600.000 €, oder Befreiung von Buchführungspflicht, oder Angehöriger freier Berufe.",
+      "musterpunkte": ["Soll = Zeitpunkt Leistung", "Ist = Zeitpunkt Zahlung", "600.000 €", "freie Berufe"],
+      "tags": ["umsatzsteuer", "soll-ist"],
+      "sources": [{ "quellen_id": "tag6-steuer-breier", "seite_ab": 12 }],
+      "erstellt_am": "2026-04-19"
+    },
+    {
+      "id": "q-0020",
+      "typ": "offen", "thema": "steuer-ueberblick", "cluster": "steuer-recht", "schwierigkeit": 2,
+      "prompt": "Definieren Sie den Steuerbegriff nach § 3 I AO. Was unterscheidet eine Steuer von Gebühr und Beitrag?",
+      "musterantwort": "**Steuer (§ 3 I AO):** Geldleistung, keine Gegenleistung, von öffentlich-rechtlichem Gemeinwesen zur Erzielung von Einnahmen, allen auferlegt soweit Tatbestand zutrifft.\n**Gebühr:** Gegenleistung für **tatsächlich in Anspruch genommene** Leistung (z. B. Bauabnahme, Müllabfuhr).\n**Beitrag:** Gegenleistung für **angebotene** Leistung, unabhängig ob genutzt (z. B. Rundfunkbeitrag, Kurtaxe).",
+      "musterpunkte": ["Geldleistung", "keine Gegenleistung", "öffentlich-rechtlich", "Gebühr tatsächlich", "Beitrag unabhängig"],
+      "eselsbruecke": "Gebühr = du nutzt. Beitrag = du könntest nutzen. Steuer = du zahlst einfach.",
+      "tags": ["steuer", "gebuehr", "beitrag", "ao"],
+      "sources": [{ "quellen_id": "tag6-steuer-breier", "seite": 4 }],
+      "erstellt_am": "2026-04-19"
+    },
+    {
+      "id": "q-0021",
+      "typ": "offen", "thema": "steuer-ueberblick", "cluster": "steuer-recht", "schwierigkeit": 2,
+      "prompt": "Unterscheiden Sie direkte und indirekte Steuern mit je einem Beispiel.",
+      "musterantwort": "**Direkte Steuer:** Steuerschuldner (gesetzlich Verpflichtete) und Steuerträger (wirtschaftlich Belastete) sind **identisch**. Beispiel: Einkommensteuer, Körperschaftsteuer.\n**Indirekte Steuer:** Steuerschuldner und Steuerträger sind **nicht** identisch — der Schuldner reicht die Belastung weiter. Beispiel: Umsatzsteuer, Verbrauchsteuern.",
+      "musterpunkte": ["direkt = Schuldner=Träger", "indirekt = Schuldner≠Träger", "Beispiele"],
+      "tags": ["steuer", "direkt-indirekt"],
+      "sources": [{ "quellen_id": "tag6-steuer-breier", "seite": 5 }],
+      "erstellt_am": "2026-04-19"
+    },
+    {
+      "id": "q-0022",
+      "typ": "liste", "thema": "steuer-ueberblick", "cluster": "steuer-recht", "schwierigkeit": 2,
+      "prompt": "Nennen Sie die 3 Einteilungskriterien für Steuerarten und je mindestens ein Beispiel.",
+      "liste": { "mindestanzahl": 3, "muster_items": ["Nach Ertraghoheit (Bund/Land/Gemeinde/Gemeinschaft/Kirche)", "Nach Steuergegenstand (Besitz-, Verkehr-, Verbrauchsteuer)", "Nach Erhebungsart (direkt / indirekt)"] },
+      "tags": ["steuerarten"],
+      "sources": [{ "quellen_id": "tag6-steuer-breier", "seite": 6 }],
+      "erstellt_am": "2026-04-19"
+    },
+    {
+      "id": "q-0023",
+      "typ": "rechnen", "thema": "eigenkapital-rentabilitaet", "cluster": "kalkulation-kosten", "schwierigkeit": 2,
+      "prompt": "Ein Unternehmen erwirtschaftet 30.000 € Gewinn bei einem Eigenkapital von 100.000 €. Berechnen Sie die Eigenkapital-Rentabilität in Prozent.",
+      "rechnen": {
+        "formel": "EKR = Gewinn / Eigenkapital × 100",
+        "eingabe_felder": [{ "label": "Eigenkapital-Rentabilität", "einheit": "%" }],
+        "loesung_wert": 30,
+        "loesung_toleranz": 0,
+        "zwischenschritte": ["30.000 / 100.000 = 0,30", "0,30 × 100 = 30 %"]
+      },
+      "musterantwort": "EKR = 30.000 € / 100.000 € × 100 = **30 %**. Das ist eine starke Rentabilität — solide Betriebe liegen bei 10–20 %.",
+      "tags": ["rentabilitaet", "eigenkapital", "bilanzanalyse"],
+      "sources": [{ "quellen_id": "tag5-unterrichtkomplett", "seite": 5 }],
+      "erstellt_am": "2026-04-19"
+    },
+    {
+      "id": "q-0024",
+      "typ": "rechnen", "thema": "produktive-stunden", "cluster": "kalkulation-kosten", "schwierigkeit": 3,
+      "prompt": "Ein Mitarbeiter arbeitet 52 Wochen × 40 h/Woche. Abzüge: 30 Tage Urlaub, 10 Tage Krankheit, 10 Feiertage, 4 Tage sonstige Freistellung (à 8 h), plus 88 h unproduktive Anwesenheit. Berechnen Sie die produktiven Stunden pro Jahr.",
+      "rechnen": {
+        "formel": "Brutto − Abzüge − Unproduktive = Produktive Stunden",
+        "eingabe_felder": [{ "label": "Produktive Stunden", "einheit": "Std" }],
+        "loesung_wert": 1560,
+        "loesung_toleranz": 5,
+        "zwischenschritte": [
+          "Brutto: 52 × 40 = 2.080 h",
+          "Abzüge: (30+10+10+4) × 8 = 432 h",
+          "Anwesenheit: 2.080 − 432 = 1.648 h",
+          "Produktive: 1.648 − 88 = 1.560 h (= 75 % Produktivität)"
+        ]
+      },
+      "musterantwort": "2.080 − 432 − 88 = **1.560 produktive Stunden** pro Jahr = 75 % Produktivitätsquote.",
+      "tags": ["produktivitaet", "kalkulation", "stundensatz"],
+      "sources": [{ "quellen_id": "tag5-unterrichtkomplett", "seite": 6 }],
+      "erstellt_am": "2026-04-19"
+    },
+    {
+      "id": "q-0025",
+      "typ": "offen", "thema": "produktive-stunden", "cluster": "kalkulation-kosten", "schwierigkeit": 2,
+      "prompt": "Warum wird der Stundensatz auf produktive Stunden umgelegt, nicht auf Bruttoarbeitszeit?",
+      "musterantwort": "Weil nur **produktive Stunden abrechenbar** sind. Urlaub, Krankheit, Feiertage und unproduktive Anwesenheit (Meetings, Rüstzeit) bezahlt der Kunde nicht — aber die **Kosten fallen für 100 %** an. Wer auf 2.080 h umlegt statt auf ~1.560 h, kalkuliert sich arm.",
+      "musterpunkte": ["nur produktive abrechenbar", "Kosten fallen für 100%", "Kalkulation zu niedrig wenn Brutto"],
+      "tags": ["kalkulation", "stundensatz"],
+      "sources": [{ "quellen_id": "tag5-unterrichtkomplett", "seite": 6 }],
+      "erstellt_am": "2026-04-19"
+    },
+    {
+      "id": "q-0026",
+      "typ": "rechnen", "thema": "bruttolohn-netto", "cluster": "kalkulation-kosten", "schwierigkeit": 2,
+      "prompt": "Ein Mitarbeiter hat 3.000 € Bruttolohn. Lohnsteuer + Kirchensteuer betragen 450 €. Sozialversicherung ~40 % von 3.000 € (je zur Hälfte AG/AN). Plus Unfallversicherung 400 €. Wie hoch sind die Gesamtkosten für den Arbeitgeber und wie viel Netto hat der Mitarbeiter?",
+      "rechnen": {
+        "formel": "AG-Kosten = Brutto + AG-SV-Anteil + Unfall-V · Netto = Brutto − Steuer − AN-SV-Anteil",
+        "eingabe_felder": [
+          { "label": "AG-Gesamtkosten", "einheit": "€" },
+          { "label": "Netto AN", "einheit": "€" }
+        ],
+        "loesung_wert": 4000,
+        "loesung_toleranz": 10,
+        "zwischenschritte": [
+          "SV gesamt: 40% × 3.000 = 1.200 €, je ½ → AG 600 €, AN 600 €",
+          "AG: 3.000 + 600 + 400 = 4.000 €",
+          "AN Netto: 3.000 − 450 − 600 = 1.950 €"
+        ]
+      },
+      "musterantwort": "**AG-Kosten: ≈ 4.000 €** (3.000 Brutto + 600 AG-SV + 400 Unfall-V).\n**Netto AN: 1.950 €** (3.000 − 450 Steuer − 600 AN-SV-Anteil).",
+      "musterpunkte": ["AG ~4.000", "Netto 1.950", "SV 40%", "½ AG/½ AN"],
+      "eselsbruecke": "Brutto × 1,33 = AG-Kosten. Brutto × 0,65 = Netto.",
+      "tags": ["lohn", "brutto-netto", "sv"],
+      "sources": [{ "quellen_id": "tag5-unterrichtkomplett", "seite": 4 }],
+      "erstellt_am": "2026-04-19"
+    },
+    {
+      "id": "q-0027",
+      "typ": "liste", "thema": "gob-grundsaetze", "cluster": "rechnungswesen-buchfuehrung", "schwierigkeit": 2,
+      "prompt": "Nennen Sie mindestens 5 Grundsätze ordnungsgemäßer Buchführung (GoB).",
+      "liste": { "mindestanzahl": 5, "muster_items": ["Klarheit", "lebende Sprache + Landeswährung", "Vollständige fortlaufende Erfassung", "keine Buchung ohne Beleg", "keine Bleistifteinträge / kein Radieren", "Winkelstrich bei Lücken", "tägliche Kassenbestände", "10 Jahre Aufbewahrung", "doppelte Buchführung"] },
+      "tags": ["gob"],
+      "sources": [{ "quellen_id": "tag2-gob" }],
+      "erstellt_am": "2026-04-19"
+    },
+    {
+      "id": "q-0028",
+      "typ": "mc-4", "thema": "gob-grundsaetze", "cluster": "rechnungswesen-buchfuehrung", "schwierigkeit": 1,
+      "prompt": "Wie lange müssen Bücher, Bilanzen und Inventare nach § 147 AO aufbewahrt werden?",
+      "antworten": [
+        { "text": "5 Jahre", "korrekt": false },
+        { "text": "6 Jahre", "korrekt": false, "erklaerung": "6 Jahre gilt für Handels-/Geschäftsbriefe." },
+        { "text": "10 Jahre", "korrekt": true, "erklaerung": "§ 147 AO — Bücher, Bilanzen, Inventare 10 Jahre." },
+        { "text": "15 Jahre", "korrekt": false }
+      ],
+      "musterpunkte": ["10 Jahre", "§ 147 AO", "Bücher/Bilanzen/Inventare"],
+      "tags": ["aufbewahrung", "ao"],
+      "sources": [{ "quellen_id": "tag2-gob" }],
+      "erstellt_am": "2026-04-19"
+    },
+    {
+      "id": "q-0029",
+      "typ": "mc-4", "thema": "rechtsformen", "cluster": "unternehmensgruendung", "schwierigkeit": 2,
+      "prompt": "Wie hoch ist das Mindest-Stammkapital einer GmbH, und wieviel muss davon bei Gründung eingezahlt sein?",
+      "antworten": [
+        { "text": "25.000 € Stammkapital, davon 12.500 € bei Gründung", "korrekt": true, "erklaerung": "Standard-GmbH nach GmbHG." },
+        { "text": "25.000 € Stammkapital, voll einzuzahlen", "korrekt": false },
+        { "text": "50.000 € Stammkapital, davon 25.000 € bei Gründung", "korrekt": false, "erklaerung": "Das ist die AG (50.000 €)." },
+        { "text": "1 € Stammkapital (UG)", "korrekt": false, "erklaerung": "Nur bei der haftungsbeschränkten UG (Sonderform, Rücklagenpflicht)." }
+      ],
+      "musterpunkte": ["25.000", "12.500 Gründung"],
+      "tags": ["gmbh", "stammkapital"],
+      "sources": [{ "quellen_id": "tag4-rechtsformen" }],
+      "erstellt_am": "2026-04-19"
+    },
+    {
+      "id": "q-0030",
+      "typ": "offen", "thema": "rechtsformen", "cluster": "unternehmensgruendung", "schwierigkeit": 3,
+      "prompt": "Was unterscheidet einen Komplementär von einem Kommanditisten in der KG?",
+      "musterantwort": "**Komplementär:** Vollhafter — haftet unbeschränkt persönlich, führt das Unternehmen.\n**Kommanditist:** Teilhafter — haftet nur mit seiner im Handelsregister eingetragenen **Hafteinlage**, ist von der Geschäftsführung ausgeschlossen, aber am Gewinn beteiligt.",
+      "musterpunkte": ["Komplementär voll haftend", "Kommanditist Hafteinlage", "HR-Eintrag", "GF nur Komplementär"],
+      "eselsbruecke": "Komplementär = Kapitän, unbeschränkt verantwortlich. Kommanditist = stiller Investor, haftet nur mit seinem Einsatz.",
+      "tags": ["kg", "kommanditist", "komplementaer"],
+      "sources": [{ "quellen_id": "tag4-rechtsformen" }],
+      "erstellt_am": "2026-04-19"
+    }
+  ]
+}

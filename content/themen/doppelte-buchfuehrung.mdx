@@ -1,0 +1,92 @@
+---
+slug: doppelte-buchfuehrung
+titel: Doppelte vs. einfache Buchführung · Wer muss, wer darf
+cluster: rechnungswesen-buchfuehrung
+reihenfolge: 3
+dauer_min: 5
+schwierigkeit: 2
+quellen:
+  - tag2-gob-einfuehrung
+  - tag5-unterrichtkomplett-s3
+dozent_primaer: schaberger
+fragen: [q-0014, q-0016]
+---
+
+## Zwei Systeme — ein Pflicht-Entscheid
+
+Im deutschen Steuerrecht gibt es **zwei Buchführungs-Systeme**:
+
+### Einfache Buchführung (Einnahmen-Überschuss-Rechnung · EÜR)
+**Prinzip:** *Erst wenn der Kunde zahlt, trage ich es ein.* → **Ist-Rechnung**.
+
+- Kein separates Konto für Forderungen / Verbindlichkeiten
+- Nur Einzahlungen und Auszahlungen zählen
+- Kleineren Betrieben erlaubt (siehe Schwellen)
+- Weniger Aufwand
+
+### Doppelte Buchführung
+**Prinzip:** *Jeder Beleg wird sofort gebucht — Waren-Eingang, Rechnung, egal wer wann zahlt.* → **Soll-Rechnung**.
+
+- Wird eine Rechnung gestellt, wird sie gebucht (= Forderung).
+- Wird sie später bezahlt, wird ERNEUT gebucht (Umbuchung Forderung → Bank).
+- Ergebnis: **Bilanz + GuV** können jederzeit gezogen werden.
+- Deutlich aufwändiger, aber regelkonform nach HGB.
+
+## Wer MUSS doppelte Buchführung führen?
+
+### Nach Handelsrecht (HGB §§ 238 ff.)
+
+Jeder **Kaufmann** im Sinne des HGB — also:
+
+- Jede Firma mit Eintrag im **Handelsregister**
+- Alle Kapitalgesellschaften (**GmbH, AG immer**)
+
+### Nach Steuerrecht (§ 141 AO)
+
+Ein Gewerbebetrieb ist zur doppelten Buchführung verpflichtet, wenn **einer** der folgenden Schwellenwerte überschritten wird:
+
+- **800.000 € Umsatz** im Wirtschaftsjahr **ODER**
+- **80.000 € Gewinn** im Wirtschaftsjahr
+
+> **Aktuelle Werte (seit Wachstumschancengesetz 2024).** Vor 2024 galten 600.000 € / 60.000 €. **Ältere Lehrbücher können noch die alten Werte enthalten** — in der Prüfung die aktuellen Werte verwenden.
+
+## Entscheidungsbaum
+
+```
+Bin ich GmbH / AG / im HR eingetragen?
+ ├── JA → doppelte Buchführung (immer)
+ └── NEIN → Gewerbebetrieb?
+     ├── NEIN (Freiberufler, Land-/Forstwirt mit Ausnahme) → EÜR erlaubt
+     └── JA → Umsatz > 800k ODER Gewinn > 80k?
+         ├── JA → doppelte Buchführung
+         └── NEIN → EÜR erlaubt (solange Schwelle hält)
+```
+
+## Regel- vs. Ist-Besteuerung (Umsatzsteuer)
+
+Für die **Umsatzsteuer** gibt es eine eigene Regelung — bitte nicht mit der Buchführungspflicht verwechseln:
+
+- **Regel-Besteuerung (§ 16 I UStG):** UST fällig im Moment der Rechnungstellung (Soll-Besteuerung).
+- **Ist-Besteuerung (§ 20 UStG):** Auf Antrag UST erst fällig, wenn Kunde gezahlt hat.
+  - Voraussetzung: Vorjahres-Gesamtumsatz ≤ **600.000 €** ODER Freistellung von der Buchführungspflicht ODER Angehöriger freier Berufe.
+
+**Merke:** Die **600.000 €** aus § 20 UStG sind **NICHT** dasselbe wie die **800.000 €** aus § 141 AO. Zwei verschiedene Gesetze, zwei verschiedene Schwellen.
+
+## Praxis-Beispiel
+
+*Einzelunternehmen Otto Holz · Schreinerei:*
+- 2024: Umsatz 650.000 €, Gewinn 75.000 € → **EÜR noch erlaubt** (beide Schwellen unter 800/80)
+- 2025: Umsatz 820.000 €, Gewinn 78.000 € → **doppelte Buchführung Pflicht** (Umsatz überschritten)
+
+## Merksätze
+
+> **Einfache Buchführung:** Erst Kasse, dann Buchung.
+> **Doppelte Buchführung:** Erst Buchung, später Kasse.
+
+> **HGB zwingt Kaufleute, AO zwingt große Gewerbebetriebe.** Wer beides trifft, führt doppelt.
+
+## Kernquellen
+
+- *Einführung GOB* (Tag 2)
+- *Unterrichtkomplett* Tafelbild 12.04.26 · Samir handschriftlich: "ab 800.000 € Umsatz **oder** 80.000 € Gewinn"
+- § 141 AO, § 238 HGB, § 20 UStG
