@@ -108,10 +108,60 @@ export function calcMastery(p: FrageProgress): number {
     score += pts * w; wTot += w;
   });
   let m = wTot === 0 ? 0 : score / wTot;
-  m *= 1 + Math.min(p.streak * 0.04, 0.2);
+
+  // Comeback-Erkennung: wieviele Falschantworten gab es direkt vor der aktuellen Richtig-Serie?
+  let preComebackFails = 0;
+  if (p.streak > 0 && p.history.length > p.streak) {
+    for (let i = p.streak; i < p.history.length; i++) {
+      const a = p.history[i];
+      if (!a.correct || a.partial) preComebackFails++;
+      else break;
+    }
+  }
+  const isComeback = preComebackFails >= 3;
+
+  // Streak-Bonus · nicht-linear: zweite und dritte Richtige nach Fehler-Serie
+  // werden stärker belohnt, weil sie den Lerneffekt bestätigen.
+  // Normal:   1→4%  2→8%  3→12%  4→16%  5→20%
+  // Comeback: 1→5%  2→20% 3→30%  4→35%  5→40%  ← non-linear jump at streak 2
+  const comebackBonus = [0, 0.05, 0.20, 0.30, 0.35, 0.40];
+  const normalBonus = (s: number) => Math.min(s * 0.04, 0.2);
+  const bonus = isComeback
+    ? (comebackBonus[Math.min(p.streak, 5)] ?? 0.40)
+    : normalBonus(p.streak);
+  m *= 1 + bonus;
+
   const days = (Date.now() - p.lastSeen) / 86400000;
   if (days > 0.5) m *= Math.pow(0.5, days / 14);
   return Math.round(Math.min(Math.max(m, 0), 100));
+}
+
+/** Gibt dem UI die Stats pro Frage in lesbarer Form */
+export function calcFrageStats(p: FrageProgress | undefined) {
+  if (!p || p.history.length === 0) {
+    return { attempts: 0, correct: 0, wrong: 0, partial: 0, streak: 0, mastery: 0, fresh: true, isComeback: false };
+  }
+  const attempts = p.history.length;
+  const correct = p.history.filter((a) => a.correct && !a.partial).length;
+  const wrong = p.history.filter((a) => !a.correct).length;
+  const partial = p.history.filter((a) => a.partial).length;
+
+  // Comeback-Flag
+  let preFails = 0;
+  if (p.streak > 0 && p.history.length > p.streak) {
+    for (let i = p.streak; i < p.history.length; i++) {
+      const a = p.history[i];
+      if (!a.correct || a.partial) preFails++;
+      else break;
+    }
+  }
+  return {
+    attempts, correct, wrong, partial,
+    streak: p.streak,
+    mastery: calcMastery(p),
+    fresh: false,
+    isComeback: preFails >= 3 && p.streak >= 2,
+  };
 }
 
 export function calcConfidence(attempts: number): number {

@@ -8,13 +8,13 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "motion/react";
-import { useProgress } from "@/lib/progress-context";
+import { useProgress, calcFrageStats } from "@/lib/progress-context";
 import type { Frage } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ClawbuisCredit } from "@/components/clawbuis-badge";
-import { Check, X, ChevronRight, Sparkles, Target, PenLine, Plus, Calculator, Clock, Trophy, CheckCircle2, CircleMinus, XCircle, Lightbulb, Brain } from "lucide-react";
+import { Check, X, ChevronRight, Sparkles, Target, PenLine, Plus, Calculator, Clock, Trophy, CheckCircle2, CircleMinus, XCircle, Lightbulb, Brain, Flame, Repeat, TrendingUp } from "lucide-react";
 
 interface Props {
   fragen: Frage[];
@@ -25,7 +25,7 @@ interface Props {
 interface Result { total: number; correct: number; partial: number; wrong: number; }
 
 export function FrageRunner({ fragen, mode, timerSec }: Props) {
-  const { recordAnswer } = useProgress();
+  const { recordAnswer, progress } = useProgress();
   const [idx, setIdx] = useState(0);
   const [result, setResult] = useState<Result>({ total: 0, correct: 0, partial: 0, wrong: 0 });
   const [done, setDone] = useState(false);
@@ -131,7 +131,10 @@ export function FrageRunner({ fragen, mode, timerSec }: Props) {
           transition={{ duration: 0.3 }}
           className="flex-1 max-w-3xl mx-auto w-full px-4 md:px-5 py-6"
         >
-          <TypIcon typ={cur.typ} />
+          <div className="flex items-center gap-2 mb-3 flex-wrap">
+            <TypIcon typ={cur.typ} />
+            <FrageStats frageId={cur.id} progress={progress} />
+          </div>
           {cur.kontext && (
             <div className="rounded-lg bg-muted/30 border border-border/40 p-3 text-sm italic text-muted-foreground mb-4">
               {cur.kontext}
@@ -165,10 +168,64 @@ function TypIcon({ typ }: { typ: string }) {
   };
   const m = M[typ] ?? M.offen;
   return (
-    <div className="inline-flex items-center gap-1.5 mb-3">
+    <div className="inline-flex items-center gap-1.5">
       <m.Icon className={`h-3.5 w-3.5 ${m.color}`} />
       <span className={`text-[10px] uppercase tracking-[0.25em] ${m.color}`}>{m.label}</span>
     </div>
+  );
+}
+
+// ─── Frage-Stats · Per-Question counter + score ─────────────────
+
+import type { FrageProgress } from "@/lib/progress-context";
+
+function FrageStats({ frageId, progress }: { frageId: string; progress: Record<string, FrageProgress> }) {
+  const s = calcFrageStats(progress[frageId]);
+  if (s.fresh) {
+    return (
+      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full border border-primary/30 bg-primary/10 text-[10px] text-primary font-medium">
+        <Sparkles className="h-2.5 w-2.5" /> Neu · noch nie gesehen
+      </span>
+    );
+  }
+  // Mastery-Farbe
+  const masteryColor =
+    s.mastery >= 90 ? "text-accent" :
+    s.mastery >= 70 ? "text-success" :
+    s.mastery >= 40 ? "text-primary" :
+    "text-destructive";
+  const masteryBg =
+    s.mastery >= 90 ? "border-accent/40 bg-accent/10" :
+    s.mastery >= 70 ? "border-success/40 bg-success/10" :
+    s.mastery >= 40 ? "border-primary/40 bg-primary/10" :
+    "border-destructive/40 bg-destructive/10";
+
+  return (
+    <>
+      <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full border text-[10px] font-medium ${masteryBg} ${masteryColor}`}>
+        <TrendingUp className="h-2.5 w-2.5" />
+        <span className="font-mono">{s.mastery}</span>
+      </span>
+      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full border border-border bg-card/40 text-[10px] text-muted-foreground font-medium">
+        <Repeat className="h-2.5 w-2.5" />
+        <span className="font-mono text-foreground">{s.attempts}×</span>
+        <span className="text-success">✓{s.correct}</span>
+        {s.wrong > 0 && <span className="text-destructive">✗{s.wrong}</span>}
+      </span>
+      {s.streak > 0 && (
+        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full border text-[10px] font-medium ${
+          s.isComeback
+            ? "border-accent/60 bg-accent/15 text-accent animate-pulse"
+            : s.streak >= 3
+              ? "border-success/40 bg-success/10 text-success"
+              : "border-primary/40 bg-primary/10 text-primary"
+        }`}>
+          <Flame className="h-2.5 w-2.5" />
+          <span className="font-mono">{s.streak}</span>
+          {s.isComeback && <span className="text-[9px] uppercase tracking-wider">Comeback!</span>}
+        </span>
+      )}
+    </>
   );
 }
 
