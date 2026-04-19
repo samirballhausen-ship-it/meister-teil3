@@ -304,18 +304,6 @@ function ListeUI({ frage, onAnswer }: { frage: Frage; onAnswer: (c: boolean, t: 
   const muster = frage.liste?.muster_items ?? [];
   const items = input.split("\n").map((l) => l.trim()).filter(Boolean);
 
-  const matches = muster.map((m) => {
-    const normalize = (s: string) => s.toLowerCase()
-      .replace(/ä/g, "a").replace(/ö/g, "o").replace(/ü/g, "u").replace(/ß/g, "ss")
-      .replace(/[.,;:!?()/]/g, " ").replace(/\s+/g, " ").trim();
-    const keys = normalize(m).split(" ").filter((w) => w.length > 2);
-    return items.some((u) => {
-      const un = normalize(u);
-      return keys.some((k) => un.includes(k) || k.includes(un));
-    });
-  });
-  const hits = matches.filter(Boolean).length;
-
   return (
     <div>
       {!submitted ? (
@@ -341,34 +329,47 @@ function ListeUI({ frage, onAnswer }: { frage: Frage; onAnswer: (c: boolean, t: 
           />
           <div className="mt-5 flex justify-end">
             <Button onClick={() => setSubmitted(true)} disabled={items.length === 0} size="lg" className="rounded-xl">
-              Prüfen
+              Muster zeigen
             </Button>
           </div>
         </>
       ) : (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
-          <div className="rounded-2xl border border-accent/30 bg-accent/5 p-5 text-center">
-            <p className="gravur text-5xl font-semibold text-accent">{hits}<span className="text-muted-foreground text-2xl">/{min}</span></p>
-            <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground mt-2">erwischt</p>
+          {/* Deine Nennungen + Muster nebeneinander zum Selbst-Abgleich */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div className="rounded-xl border border-border/50 bg-card/40 p-4">
+              <p className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground mb-2 flex items-center gap-1.5">
+                <PenLine className="h-3 w-3" /> Deine Nennungen ({items.length})
+              </p>
+              <ul className="space-y-1">
+                {items.length > 0 ? items.map((it, i) => (
+                  <li key={i} className="text-xs text-foreground/90 font-mono">• {it}</li>
+                )) : (
+                  <li className="text-xs text-muted-foreground italic">— keine Einträge —</li>
+                )}
+              </ul>
+            </div>
+            <div className="rounded-xl border border-primary/30 bg-primary/5 p-4">
+              <p className="text-[10px] uppercase tracking-[0.25em] text-primary mb-2 flex items-center gap-1.5">
+                <Target className="h-3 w-3" /> Muster-Antwort
+              </p>
+              <ul className="space-y-1">
+                {muster.map((m, i) => (
+                  <li key={i} className="text-xs text-foreground flex items-start gap-1.5">
+                    <span className="text-primary shrink-0">•</span>
+                    <span>{m}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
 
-          <div className="rounded-xl border border-border/50 p-4">
-            <p className="text-xs font-medium mb-3 flex items-center gap-2">
-              <Target className="h-3 w-3 text-primary" /> Muster-Antwort
+          {frage.eselsbruecke && <LernhilfeCard text={frage.eselsbruecke} />}
+
+          <div className="rounded-xl border border-accent/20 bg-accent/5 p-3 text-center">
+            <p className="text-[11px] text-muted-foreground">
+              Gleich deine Nennungen mit dem Muster ab und <span className="text-accent font-medium">bewerte dich selbst</span>.
             </p>
-            <ul className="space-y-1.5">
-              {muster.map((m, i) => (
-                <li key={i} className="flex items-start gap-2 text-xs">
-                  {matches[i] ? <Check className="h-3.5 w-3.5 text-success shrink-0 mt-0.5" /> : <X className="h-3.5 w-3.5 text-destructive/70 shrink-0 mt-0.5" />}
-                  <span className={matches[i] ? "text-foreground" : "text-muted-foreground"}>{m}</span>
-                </li>
-              ))}
-            </ul>
-            {frage.eselsbruecke && (
-              <p className="mt-4 pt-3 border-t border-border/40 text-xs text-accent flex items-start gap-1.5">
-                <Sparkles className="h-3 w-3 mt-0.5 shrink-0" /> {frage.eselsbruecke}
-              </p>
-            )}
           </div>
 
           <div className="grid grid-cols-3 gap-2">
@@ -506,13 +507,16 @@ function OffenUI({ frage, onAnswer }: { frage: Frage; onAnswer: (c: boolean, t: 
                   ))}
                 </div>
               )}
-              {frage.eselsbruecke && (
-                <p className="mt-4 pt-3 border-t border-primary/20 text-xs text-accent flex items-start gap-1.5">
-                  <Sparkles className="h-3 w-3 mt-0.5 shrink-0" /> {frage.eselsbruecke}
-                </p>
-              )}
             </CardContent>
           </Card>
+
+          {frage.eselsbruecke && <LernhilfeCard text={frage.eselsbruecke} />}
+
+          <div className="rounded-xl border border-accent/20 bg-accent/5 p-3 text-center">
+            <p className="text-[11px] text-muted-foreground">
+              Gleich deine Antwort mit dem Muster ab und <span className="text-accent font-medium">bewerte dich selbst</span>.
+            </p>
+          </div>
 
           <div className="grid grid-cols-3 gap-2">
             <RatingButton onClick={() => onAnswer(true, (Date.now() - t0) / 1000, false)}  icon={CheckCircle2} color="success"     label="Sicher" />
