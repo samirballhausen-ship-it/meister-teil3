@@ -19,6 +19,28 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+
+  /**
+   * Firebase Auth same-origin proxy: kritisch für Custom-Domains.
+   * Ohne diesen Proxy speichert Firebase die Auth-Session auf
+   * `*.firebaseapp.com` — Browser blockieren 3rd-party-cookies →
+   * getRedirectResult liefert nichts, User bleibt abgelogt.
+   *
+   * Mit diesem Proxy läuft der Auth-Handler auf der eigenen Domain,
+   * Session-Tokens sind same-origin, alles funktioniert.
+   */
+  async rewrites() {
+    return [
+      {
+        source: "/__/auth/:path*",
+        destination: "https://meister-tischler-lernapp.firebaseapp.com/__/auth/:path*",
+      },
+      {
+        source: "/__/firebase/:path*",
+        destination: "https://meister-tischler-lernapp.firebaseapp.com/__/firebase/:path*",
+      },
+    ];
+  },
 };
 
 export default nextConfig;
