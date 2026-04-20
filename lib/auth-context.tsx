@@ -68,10 +68,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return;
     }
 
-    // Redirect-Result einsammeln (Mobile-Fallback nach signInWithRedirect)
-    getRedirectResult(auth).catch((err) => {
-      console.warn("Auth redirect result skipped:", err);
-    });
+    // Redirect-Result proper handhaben: nach signInWithRedirect bringt
+    // Firebase den eingeloggten User zurück. Setzen wir sofort als User.
+    getRedirectResult(auth)
+      .then((result) => {
+        if (result?.user) {
+          localStorage.removeItem(GUEST_KEY);
+          setUser(toAppUser(result.user));
+          setLoading(false);
+        }
+      })
+      .catch((err) => {
+        console.warn("Auth redirect result skipped:", err);
+      });
 
     const unsub = onAuthStateChanged(auth, async (fu) => {
       if (fu) {
@@ -101,17 +110,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   async function signInWithGoogle() {
-    const isMobile = typeof window !== "undefined" &&
-      /Android|iPhone|iPad|iPod|Opera Mini|Mobile/i.test(window.navigator.userAgent);
+    // Redirect-Flow als Default: robust über alle Browser und Mobile, keine
+    // Popup-Blocker-Probleme, keine 3rd-Party-Cookie-Hänger. Seite navigiert
+    // zu accounts.google.com, kommt zurück, getRedirectResult übernimmt.
     try {
-      const result = await signInWithPopup(auth, googleProvider);
-      localStorage.removeItem(GUEST_KEY);
-      setUser(toAppUser(result.user));
+      await signInWithRedirect(auth, googleProvider);
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
-      // Popup geblockt oder Mobile ohne Popup-Support → Redirect-Fallback
-      if (isMobile || msg.includes("popup-blocked") || msg.includes("popup-closed") || msg.includes("cancelled-popup-request")) {
-        await signInWithRedirect(auth, googleProvider);
+      // Letzter Fallback: Popup versuchen falls Redirect hart blockiert ist
+      if (!msg.includes("auth/unauthorized-domain")) {
+        const result = await signInWithPopup(auth, googleProvider);
+        localStorage.removeItem(GUEST_KEY);
+        setUser(toAppUser(result.user));
         return;
       }
       throw err;
