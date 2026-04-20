@@ -61,31 +61,34 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check Guest-Session first
-    if (typeof window !== "undefined" && localStorage.getItem(GUEST_KEY) === "1") {
-      setUser({ uid: "guest", email: null, displayName: "Gast", photoURL: null, isGuest: true });
-      setLoading(false);
-      return;
-    }
+    const log = (...a: unknown[]) => console.log("[auth]", ...a);
 
-    // Redirect-Result proper handhaben: nach signInWithRedirect bringt
-    // Firebase den eingeloggten User zurück. Setzen wir sofort als User.
+    // 1. Redirect-Result einsammeln — muss ZUERST laufen, sonst geht das
+    //    Google-Login-Resultat verloren wenn zuvor ein GUEST_KEY gesetzt war.
     getRedirectResult(auth)
       .then((result) => {
         if (result?.user) {
+          log("redirect-result received:", result.user.email);
           localStorage.removeItem(GUEST_KEY);
           setUser(toAppUser(result.user));
           setLoading(false);
+        } else {
+          log("redirect-result: null (kein redirect-flow aktiv)");
         }
       })
       .catch((err) => {
-        console.warn("Auth redirect result skipped:", err);
+        console.error("[auth] redirect-result error:", err);
       });
 
+    // 2. onAuthStateChanged hat IMMER Vorrang vor GUEST_KEY.
+    //    Wenn Firebase-Session aktiv → Firebase-User setzen, GUEST_KEY löschen.
+    //    Wenn keine Firebase-Session + GUEST_KEY=1 → Gast-Mode.
+    //    Sonst → anonymous (kein User, kein Guest).
     const unsub = onAuthStateChanged(auth, async (fu) => {
+      log("onAuthStateChanged:", fu?.email ?? "null");
       if (fu) {
+        localStorage.removeItem(GUEST_KEY);
         setUser(toAppUser(fu));
-        // Ensure user doc exists
         try {
           const ref = doc(db, COL, fu.uid);
           const snap = await getDoc(ref);
@@ -99,10 +102,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             });
           }
         } catch (err) {
-          console.warn("Firestore user-doc init skipped:", err);
+          console.warn("[auth] Firestore user-doc init skipped:", err);
         }
       } else {
-        setUser(null);
+        // Kein Firebase-User — entweder Gast oder anonymous
+        const isGuest = typeof window !== "undefined" && localStorage.getItem(GUEST_KEY) === "1";
+        if (isGuest) {
+          log("fallback to guest-mode");
+          setUser({ uid: "guest", email: null, displayName: "Gast", photoURL: null, isGuest: true });
+        } else {
+          setUser(null);
+        }
       }
       setLoading(false);
     });
@@ -110,17 +120,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   async function signInWithGoogle() {
-    // Redirect-Flow als Default: robust über alle Browser und Mobile, keine
-    // Popup-Blocker-Probleme, keine 3rd-Party-Cookie-Hänger. Seite navigiert
-    // zu accounts.google.com, kommt zurück, getRedirectResult übernimmt.
+    console.log("[auth] signInWithGoogle → starting redirect");
+    // GUEST_KEY vor Redirect entfernen, damit getRedirectResult beim
+    // Zurückkommen nicht durch alten Gast-Flag überschrieben wird.
+    localStorage.removeItem(GUEST_KEY);
     try {
       await signInWithRedirect(auth, googleProvider);
+      // Promise resolves quickly, browser navigates to Google in kürze
     } catch (err) {
+      console.error("[auth] signInWithRedirect failed:", err);
       const msg = err instanceof Error ? err.message : String(err);
-      // Letzter Fallback: Popup versuchen falls Redirect hart blockiert ist
       if (!msg.includes("auth/unauthorized-domain")) {
         const result = await signInWithPopup(auth, googleProvider);
-        localStorage.removeItem(GUEST_KEY);
         setUser(toAppUser(result.user));
         return;
       }
