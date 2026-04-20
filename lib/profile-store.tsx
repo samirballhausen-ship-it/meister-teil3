@@ -59,6 +59,10 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
     lastUidRef.current = uid;
 
     (async () => {
+      // Auto-Profil aus Google-Daten (Fallback wenn Firestore unavailable)
+      const autoName = (user.displayName?.split(" ")[0] || user.email?.split("@")[0] || "Meister").trim();
+      const autoProfile: UserProfile = { name: autoName, erstelltAm: Date.now() };
+
       try {
         const ref = doc(db, COL, uid);
         const snap = await getDoc(ref);
@@ -67,22 +71,20 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
           setProfileState(cloud);
           localStorage.setItem(KEY, JSON.stringify(cloud));
         } else {
-          // Cloud leer: lokale Daten übernehmen ODER aus Google-User auto-erstellen
+          // Cloud leer: lokale Daten übernehmen ODER auto-erstellen
           const localRaw = localStorage.getItem(KEY);
-          if (localRaw) {
-            const localProfile = JSON.parse(localRaw) as UserProfile;
-            await setDoc(ref, localProfile);
-          } else {
-            // Kein lokales Profil → automatisch aus Google-Daten anlegen
-            const autoName = (user.displayName?.split(" ")[0] || user.email?.split("@")[0] || "Meister").trim();
-            const autoProfile: UserProfile = { name: autoName, erstelltAm: Date.now() };
-            setProfileState(autoProfile);
-            localStorage.setItem(KEY, JSON.stringify(autoProfile));
-            await setDoc(ref, autoProfile);
-          }
+          const toSave = localRaw ? (JSON.parse(localRaw) as UserProfile) : autoProfile;
+          setProfileState(toSave);
+          localStorage.setItem(KEY, JSON.stringify(toSave));
+          await setDoc(ref, toSave);
         }
       } catch (err) {
+        // Firestore unavailable (Rules, Offline, Quota) — App läuft trotzdem
         console.warn("Profile cloud-sync skipped:", err);
+        const localRaw = localStorage.getItem(KEY);
+        const fallback = localRaw ? (JSON.parse(localRaw) as UserProfile) : autoProfile;
+        setProfileState(fallback);
+        if (!localRaw) localStorage.setItem(KEY, JSON.stringify(fallback));
       } finally {
         setReady(true);
       }
