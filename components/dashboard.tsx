@@ -46,12 +46,17 @@ export function Dashboard({ master, contentStats, themenByCluster }: Props) {
   const router = useRouter();
 
   useEffect(() => {
-    // Onboarding nur nötig wenn KEIN eingeloggter User (bei Login kommt Profil auto)
-    if (authLoading) return;
-    if (ready && !profile && (!user || user.isGuest)) router.push("/onboarding");
+    // Onboarding nur nötig wenn KEIN eingeloggter User UND kein Profile
+    // Wichtig: BEIDE Loading-States müssen abgeschlossen sein, sonst feuern
+    // Redirects bevor user-State final gesetzt ist.
+    if (authLoading || !ready) return;
+    if (!profile && (!user || user.isGuest)) {
+      console.log("[dashboard] redirect → /onboarding (no profile + no logged-in user)");
+      router.push("/onboarding");
+    }
   }, [ready, profile, user, authLoading, router]);
 
-  if (!ready || !profile) {
+  if (authLoading || !ready || !profile) {
     return <div className="flex-1 flex items-center justify-center text-muted-foreground">…</div>;
   }
 

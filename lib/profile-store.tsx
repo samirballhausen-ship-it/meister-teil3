@@ -58,35 +58,39 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
     if (lastUidRef.current === uid) { setReady(true); return; }
     lastUidRef.current = uid;
 
-    (async () => {
-      // Auto-Profil aus Google-Daten (Fallback wenn Firestore unavailable)
-      const autoName = (user.displayName?.split(" ")[0] || user.email?.split("@")[0] || "Meister").trim();
-      const autoProfile: UserProfile = { name: autoName, erstelltAm: Date.now() };
+    // KRITISCH: ready=true SOFORT setzen + Bootstrap-Profile sofort setzen,
+    // damit Dashboard nicht auf Firestore-Roundtrip wartet. Cloud-Sync läuft
+    // dann fire-and-forget im Hintergrund.
+    const autoName = (user.displayName?.split(" ")[0] || user.email?.split("@")[0] || "Meister").trim();
+    const autoProfile: UserProfile = { name: autoName, erstelltAm: Date.now() };
+    const localRaw = (() => { try { return localStorage.getItem(KEY); } catch { return null; } })();
+    const bootstrap = localRaw ? (JSON.parse(localRaw) as UserProfile) : autoProfile;
 
+    console.log("[profile] bootstrap:", bootstrap.name, "uid:", uid);
+    setProfileState(bootstrap);
+    if (!localRaw) {
+      try { localStorage.setItem(KEY, JSON.stringify(bootstrap)); } catch {}
+    }
+    setReady(true);
+
+    // Cloud-Sync im Hintergrund — überschreibt Bootstrap nur wenn Cloud-Daten existieren
+    (async () => {
       try {
         const ref = doc(db, COL, uid);
         const snap = await getDoc(ref);
         if (snap.exists()) {
           const cloud = snap.data() as UserProfile;
+          console.log("[profile] cloud-loaded:", cloud.name);
           setProfileState(cloud);
-          localStorage.setItem(KEY, JSON.stringify(cloud));
+          try { localStorage.setItem(KEY, JSON.stringify(cloud)); } catch {}
         } else {
-          // Cloud leer: lokale Daten übernehmen ODER auto-erstellen
-          const localRaw = localStorage.getItem(KEY);
-          const toSave = localRaw ? (JSON.parse(localRaw) as UserProfile) : autoProfile;
-          setProfileState(toSave);
-          localStorage.setItem(KEY, JSON.stringify(toSave));
-          await setDoc(ref, toSave);
+          // Cloud leer → unser Bootstrap hochpushen
+          await setDoc(ref, bootstrap);
+          console.log("[profile] cloud-pushed bootstrap");
         }
       } catch (err) {
-        // Firestore unavailable (Rules, Offline, Quota) — App läuft trotzdem
-        console.warn("Profile cloud-sync skipped:", err);
-        const localRaw = localStorage.getItem(KEY);
-        const fallback = localRaw ? (JSON.parse(localRaw) as UserProfile) : autoProfile;
-        setProfileState(fallback);
-        if (!localRaw) localStorage.setItem(KEY, JSON.stringify(fallback));
-      } finally {
-        setReady(true);
+        // Firestore unavailable — App läuft trotzdem mit Bootstrap weiter
+        console.warn("[profile] cloud-sync skipped:", err);
       }
     })();
   }, [user, authLoading]);

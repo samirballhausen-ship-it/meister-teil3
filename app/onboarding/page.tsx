@@ -22,7 +22,11 @@ export default function OnboardingPage() {
   // Wenn User sich anmeldet (Google / E-Mail), übernimmt ProfileProvider
   // den Google-Namen automatisch → direkt zum Dashboard weiterleiten.
   useEffect(() => {
-    if (!authLoading && user && !user.isGuest) router.replace("/");
+    console.log("[onboarding] state:", { authLoading, user: user?.email ?? user?.uid ?? "null", isGuest: user?.isGuest });
+    if (!authLoading && user && !user.isGuest) {
+      console.log("[onboarding] redirect → / (logged in as", user.email, ")");
+      router.replace("/");
+    }
   }, [user, authLoading, router]);
 
   function commit() {

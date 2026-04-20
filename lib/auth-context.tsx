@@ -8,7 +8,7 @@
  *             von Profil und Progress in die Cloud (fire-and-forget)
  */
 
-import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import {
   onAuthStateChanged,
   signInWithPopup,
@@ -60,8 +60,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AppUser | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // Race-Protection: getRedirectResult und onAuthStateChanged können
+  // parallel feuern. Wenn ein authentifizierter User gesetzt wurde,
+  // soll ein nachfolgendes onAuthStateChanged(null) ihn nicht mehr
+  // überschreiben (außer durch explizites signOut).
+  const userRef = useRef<AppUser | null>(null);
+  const explicitSignOutRef = useRef(false);
+
   useEffect(() => {
     const log = (...a: unknown[]) => console.log("[auth]", ...a);
+
+    function setUserSafe(next: AppUser | null, source: string) {
+      const prev = userRef.current;
+      // Wenn vorher ein eingeloggter User da war und jetzt null kommt
+      // OHNE expliziten signOut → ignorieren (Race-Protection).
+      if (next === null && prev && !prev.isGuest && !explicitSignOutRef.current) {
+        log(`[${source}] ignore null-user (already authenticated as ${prev.email})`);
+        return;
+      }
+      userRef.current = next;
+      log(`[${source}] setUser:`, next?.email ?? next?.uid ?? "null");
+      setUser(next);
+    }
 
     // 1. Redirect-Result einsammeln — muss ZUERST laufen, sonst geht das
     //    Google-Login-Resultat verloren wenn zuvor ein GUEST_KEY gesetzt war.
@@ -70,7 +90,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (result?.user) {
           log("redirect-result received:", result.user.email);
           localStorage.removeItem(GUEST_KEY);
-          setUser(toAppUser(result.user));
+          setUserSafe(toAppUser(result.user), "redirect-result");
           setLoading(false);
         } else {
           log("redirect-result: null (kein redirect-flow aktiv)");
@@ -81,40 +101,47 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
 
     // 2. onAuthStateChanged hat IMMER Vorrang vor GUEST_KEY.
-    //    Wenn Firebase-Session aktiv → Firebase-User setzen, GUEST_KEY löschen.
-    //    Wenn keine Firebase-Session + GUEST_KEY=1 → Gast-Mode.
-    //    Sonst → anonymous (kein User, kein Guest).
-    const unsub = onAuthStateChanged(auth, async (fu) => {
+    //    KRITISCH: setLoading(false) läuft SOFORT nach setUser, NICHT nach
+    //    dem Firestore-await. Sonst blockiert ein langsamer Firestore-Call
+    //    die ganze App (Onboarding-Redirect, ProfileProvider-ready).
+    const unsub = onAuthStateChanged(auth, (fu) => {
       log("onAuthStateChanged:", fu?.email ?? "null");
       if (fu) {
         localStorage.removeItem(GUEST_KEY);
-        setUser(toAppUser(fu));
-        try {
-          const ref = doc(db, COL, fu.uid);
-          const snap = await getDoc(ref);
-          if (!snap.exists()) {
-            await setDoc(ref, {
-              uid: fu.uid,
-              email: fu.email,
-              displayName: fu.displayName,
-              photoURL: fu.photoURL,
-              createdAt: new Date().toISOString(),
-            });
+        setUserSafe(toAppUser(fu), "onAuthStateChanged");
+        setLoading(false);
+        // Firestore-User-Doc-Init: fire-and-forget, blockiert nichts.
+        (async () => {
+          try {
+            const ref = doc(db, COL, fu.uid);
+            const snap = await getDoc(ref);
+            if (!snap.exists()) {
+              await setDoc(ref, {
+                uid: fu.uid,
+                email: fu.email,
+                displayName: fu.displayName,
+                photoURL: fu.photoURL,
+                createdAt: new Date().toISOString(),
+              });
+              log("user-doc created in Firestore");
+            } else {
+              log("user-doc exists in Firestore");
+            }
+          } catch (err) {
+            console.warn("[auth] Firestore user-doc init skipped:", err);
           }
-        } catch (err) {
-          console.warn("[auth] Firestore user-doc init skipped:", err);
-        }
+        })();
       } else {
         // Kein Firebase-User — entweder Gast oder anonymous
         const isGuest = typeof window !== "undefined" && localStorage.getItem(GUEST_KEY) === "1";
         if (isGuest) {
           log("fallback to guest-mode");
-          setUser({ uid: "guest", email: null, displayName: "Gast", photoURL: null, isGuest: true });
+          setUserSafe({ uid: "guest", email: null, displayName: "Gast", photoURL: null, isGuest: true }, "onAuthStateChanged-guest");
         } else {
-          setUser(null);
+          setUserSafe(null, "onAuthStateChanged-none");
         }
+        setLoading(false);
       }
-      setLoading(false);
     });
     return () => unsub();
   }, []);
@@ -132,7 +159,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const msg = err instanceof Error ? err.message : String(err);
       if (!msg.includes("auth/unauthorized-domain")) {
         const result = await signInWithPopup(auth, googleProvider);
-        setUser(toAppUser(result.user));
+        const u = toAppUser(result.user);
+        userRef.current = u;
+        setUser(u);
         return;
       }
       throw err;
@@ -142,25 +171,36 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   async function signInWithEmail(email: string, password: string) {
     const result = await signInWithEmailAndPassword(auth, email, password);
     localStorage.removeItem(GUEST_KEY);
-    setUser(toAppUser(result.user));
+    const u = toAppUser(result.user);
+    userRef.current = u;
+    setUser(u);
   }
 
   async function signUpWithEmail(email: string, password: string, name: string) {
     const result = await createUserWithEmailAndPassword(auth, email, password);
     await updateProfile(result.user, { displayName: name });
     localStorage.removeItem(GUEST_KEY);
-    setUser({ ...toAppUser(result.user), displayName: name });
+    const u = { ...toAppUser(result.user), displayName: name };
+    userRef.current = u;
+    setUser(u);
   }
 
   function continueAsGuest() {
     localStorage.setItem(GUEST_KEY, "1");
-    setUser({ uid: "guest", email: null, displayName: "Gast", photoURL: null, isGuest: true });
+    const u: AppUser = { uid: "guest", email: null, displayName: "Gast", photoURL: null, isGuest: true };
+    userRef.current = u;
+    setUser(u);
   }
 
   async function signOut() {
+    explicitSignOutRef.current = true;
     try { await firebaseSignOut(auth); } catch { /* guest */ }
     localStorage.removeItem(GUEST_KEY);
+    userRef.current = null;
     setUser(null);
+    // Reset Race-Schutz nach kurzer Verzögerung, damit nachfolgende
+    // onAuthStateChanged(null)-Events durchkommen.
+    setTimeout(() => { explicitSignOutRef.current = false; }, 100);
   }
 
   return (
